@@ -82,7 +82,7 @@ func writeConfigFile() error {
 		Templates:   templates,
 		Destination: destination,
 	}
-	f, err := os.Create(".blox.yaml")
+	f, err := os.Create("blox.yaml")
 	if err != nil {
 		return err
 	}
