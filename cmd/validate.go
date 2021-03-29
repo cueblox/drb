@@ -17,8 +17,6 @@ package cmd
 
 import (
 	"fmt"
-	"log"
-	"os"
 
 	"cuelang.org/go/cue"
 	"cuelang.org/go/cue/load"
@@ -36,20 +34,23 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		path, err := os.Getwd()
+		/*path, err := os.Getwd()
 
 		if err != nil {
 			log.Println(err)
 			return
 		}
+		*/
 
 		var runtime cue.Runtime
 
 		// The entrypoints are the same as the files you'd specify at the command line
-		entrypoints := []string{fmt.Sprintf("%s/.cache/cue/root.cue", path)}
+		//entrypoints := []string{fmt.Sprintf("%s/.cache/cue/root.cue", path)}
 
+		entrypoints := []string{"github.com/devrel-blox/schema/profile"}
 		// Load Cue files into Cue build.Instances slice
 		// the second arg is a configuration object, we'll see this later
+
 		thingies := load.Instances(entrypoints, nil)
 
 		for _, bi := range thingies {
