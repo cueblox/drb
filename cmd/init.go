@@ -20,6 +20,7 @@ import (
 	"os"
 	"path"
 
+	"github.com/devrel-blox/drb/config"
 	"github.com/spf13/cobra"
 )
 
@@ -28,6 +29,7 @@ var (
 	source      string
 	destination string
 	templates   string
+	skipConfig  bool
 )
 
 // initCmd represents the init command
@@ -61,7 +63,32 @@ each content type with pre-filled values.
 			cmd.PrintErr(err.Error())
 			return
 		}
+
+		if !skipConfig {
+			err = writeConfigFile()
+			if err != nil {
+				cmd.PrintErr(err.Error())
+				return
+			}
+		}
+
 	},
+}
+
+func writeConfigFile() error {
+	cfg := config.BloxConfig{
+		Base:        base,
+		Source:      source,
+		Templates:   templates,
+		Destination: destination,
+	}
+	f, err := os.Create(".blox.yaml")
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	err = cfg.Write(f)
+	return err
 }
 
 func createDirectories(root string) error {
@@ -98,7 +125,7 @@ func init() {
 	initCmd.Flags().StringVarP(&source, "source", "s", "source", "where pre-processed content will be stored (source markdown)")
 	initCmd.Flags().StringVarP(&destination, "destination", "d", "out", "where post-processed content will be stored (output json)")
 	initCmd.Flags().StringVarP(&templates, "template", "t", "templates", "where content templates will be stored")
-
+	initCmd.Flags().BoolVarP(&skipConfig, "skip", "c", false, "don't write a configuration file")
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
