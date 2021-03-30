@@ -10,10 +10,11 @@ import (
 )
 
 type BloxConfig struct {
-	Base        string `json:"base"`
-	Source      string `json:"source"`
-	Destination string `json:"destination"`
-	Templates   string `json:"templates"`
+	Base             string `json:"base"`
+	Source           string `json:"source"`
+	Destination      string `json:"destination"`
+	Templates        string `json:"templates"`
+	DefaultExtension string `json:"default_extension"`
 }
 
 func (b *BloxConfig) Write(w io.Writer) error {
@@ -25,7 +26,7 @@ func (b *BloxConfig) Write(w io.Writer) error {
 	return err
 }
 
-func LoadConfig() (*BloxConfig, error) {
+func Load() (*BloxConfig, error) {
 	cwd, err := os.Getwd()
 	if err != nil {
 		return nil, errors.New("could not get current directory")
