@@ -1,4 +1,4 @@
-package models
+package blox
 
 import (
 	"errors"
@@ -71,5 +71,5 @@ func (m Model) New(slug string) error {
 // baseModel defines fields used by all drb
 // models
 type baseModel struct {
-	ID string `json:"id"`
+	ID string `json:"id" yaml:"id"`
 }

@@ -6,6 +6,7 @@ import (
 )
 
 type Profile struct {
+	baseModel
 	FirstName string `json:"first_name" yaml:"first_name"`
 	LastName  string `json:"last_name"  yaml:"last_name"`
 
