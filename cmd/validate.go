@@ -17,15 +17,14 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
 
 	"github.com/devrel-blox/drb/blox"
+	"github.com/devrel-blox/drb/blox/profile"
 	"github.com/devrel-blox/drb/config"
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v2"
 )
 
 // validateCmd represents the validate command
@@ -76,28 +75,38 @@ func validateModels(cfg *config.BloxConfig) map[string]error {
 					return nil
 				}
 
-				modelYaml, err := ioutil.ReadFile(path)
-
+				profile, err := profile.LoadFromYAML(path)
 				if err != nil {
 					failedModels[path] = err
 					return nil
 				}
 
-				var profile blox.Profile
+				fmt.Println(fmt.Sprintf("Profile '%s' loaded successfully", profile.FirstName))
 
-				err = yaml.Unmarshal(modelYaml, &profile)
+				return nil
 
-				if err != nil {
-					failedModels[path] = err
-					return nil
-				}
+				// modelYaml, err := ioutil.ReadFile(path)
 
-				if err := profile.Validate(); err != nil {
-					failedModels[path] = err
-					return nil
-				}
+				// if err != nil {
+				// 	failedModels[path] = err
+				// 	return nil
+				// }
 
-				fmt.Println("Valid ", model.Name, ": ", path)
+				// var profile blox.Profile
+
+				// err = yaml.Unmarshal(modelYaml, &profile)
+
+				// if err != nil {
+				// 	failedModels[path] = err
+				// 	return nil
+				// }
+
+				// if err := profile.Validate(); err != nil {
+				// 	failedModels[path] = err
+				// 	return nil
+				// }
+
+				// fmt.Println("Valid ", model.Name, ": ", path)
 				return nil
 			})
 	}

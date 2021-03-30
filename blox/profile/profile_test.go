@@ -1,4 +1,4 @@
-package blox
+package profile
 
 import (
 	"testing"
@@ -6,25 +6,6 @@ import (
 	"github.com/go-test/deep"
 	"gopkg.in/yaml.v2"
 )
-
-func TestValidate(t *testing.T) {
-	validProfile := Profile{
-		FirstName: "David",
-		LastName:  "McKay",
-		Company:   "Rawkode Enterprises",
-		Title:     "Chief Chief Officer",
-	}
-
-	if len(validProfile.Validate()) > 0 {
-		t.Error("Valid Profile failed to validate")
-	}
-
-	invalidProfile := Profile{}
-
-	if len(invalidProfile.Validate()) == 0 {
-		t.Error("Invalid Profile failed to invalidate")
-	}
-}
 
 func TestProfileDecoding(t *testing.T) {
 	expected := Profile{
