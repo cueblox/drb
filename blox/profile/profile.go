@@ -36,13 +36,13 @@ social_accounts?: [#TwitterAccount | #GitHubAccount | #MiscellaneousAccount]
 #TwitterAccount :: {
 	network: "twitter"
 	username: string
-	url: string | *"https://twitter.com/"
+	url: string | *"https://twitter.com/\(username)"
 }
 
 #GitHubAccount :: {
 	network: "github"
 	username: string
-	url: string | *"https://github.com/"
+	url: string | *"https://github.com/\(username)"
 }
 
 #MiscellaneousAccount :: {

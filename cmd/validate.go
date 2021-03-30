@@ -21,6 +21,7 @@ import (
 	"path"
 	"path/filepath"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/devrel-blox/drb/blox"
 	"github.com/devrel-blox/drb/blox/profile"
 	"github.com/devrel-blox/drb/config"
@@ -80,6 +81,8 @@ func validateModels(cfg *config.BloxConfig) map[string]error {
 					failedModels[path] = err
 					return nil
 				}
+
+				spew.Println(profile)
 
 				fmt.Println(fmt.Sprintf("Profile '%s' loaded successfully", profile.FirstName))
 
