@@ -30,6 +30,7 @@ var (
 	destination string
 	templates   string
 	skipConfig  bool
+	extension   string
 )
 
 // initCmd represents the init command
@@ -59,17 +60,11 @@ each content type with pre-filled values.
 			return
 		}
 		err = createDirectories(root)
-		if err != nil {
-			cmd.PrintErr(err.Error())
-			return
-		}
+		cobra.CheckErr(err)
 
 		if !skipConfig {
 			err = writeConfigFile()
-			if err != nil {
-				cmd.PrintErr(err.Error())
-				return
-			}
+			cobra.CheckErr(err)
 		}
 
 	},
@@ -77,10 +72,11 @@ each content type with pre-filled values.
 
 func writeConfigFile() error {
 	cfg := config.BloxConfig{
-		Base:        base,
-		Source:      source,
-		Templates:   templates,
-		Destination: destination,
+		Base:             base,
+		Source:           source,
+		Templates:        templates,
+		Destination:      destination,
+		DefaultExtension: extension,
 	}
 	f, err := os.Create("blox.yaml")
 	if err != nil {
@@ -94,15 +90,15 @@ func writeConfigFile() error {
 func createDirectories(root string) error {
 	err := os.MkdirAll(sourceDir(root), 0755)
 	if err != nil {
-		return errors.New("error creating source directory")
+		return errors.New("creating source directory")
 	}
 	err = os.MkdirAll(destinationDir(root), 0755)
 	if err != nil {
-		return errors.New("error creating destination directory")
+		return errors.New("creating destination directory")
 	}
 	err = os.MkdirAll(templateDir(root), 0755)
 	if err != nil {
-		return errors.New("error creating template directory")
+		return errors.New("creating template directory")
 	}
 
 	return nil
@@ -125,6 +121,7 @@ func init() {
 	initCmd.Flags().StringVarP(&source, "source", "s", "source", "where pre-processed content will be stored (source markdown)")
 	initCmd.Flags().StringVarP(&destination, "destination", "d", "out", "where post-processed content will be stored (output json)")
 	initCmd.Flags().StringVarP(&templates, "template", "t", "templates", "where content templates will be stored")
+	initCmd.Flags().StringVarP(&extension, "extension", "e", ".md", "default file extension for new content")
 	initCmd.Flags().BoolVarP(&skipConfig, "skip", "c", false, "don't write a configuration file")
 	// Here you will define your flags and configuration settings.
 

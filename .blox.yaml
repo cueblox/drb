@@ -1,4 +1,0 @@
-base: content
-source: source
-destination: out
-templates: templates
