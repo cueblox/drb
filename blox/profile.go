@@ -2,7 +2,10 @@ package blox
 
 import (
 	"encoding/json"
+	"errors"
 	"strings"
+
+	"github.com/hashicorp/go-multierror"
 )
 
 type Profile struct {
@@ -14,6 +17,29 @@ type Profile struct {
 	Title   string `json:"title" yaml:"title"`
 
 	SocialAccounts []SocialAccount `json:"social_accounts" yaml:"social_accounts"`
+}
+
+func (p *Profile) Validate() error {
+	var err error
+
+	// I'm sure there's a better way to do this, but this is fine for now; right?
+	if "" == p.FirstName {
+		err = multierror.Append(err, errors.New("Missing first_name"))
+	}
+
+	if "" == p.LastName {
+		err = multierror.Append(err, errors.New("Missing last_name"))
+	}
+
+	if "" == p.Company {
+		err = multierror.Append(err, errors.New("Missing company"))
+	}
+
+	if "" == p.Title {
+		err = multierror.Append(err, errors.New("Missing title"))
+	}
+
+	return err
 }
 
 type SocialAccount struct {

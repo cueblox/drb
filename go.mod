@@ -6,6 +6,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/go-test/deep v1.0.7
 	github.com/goccy/go-yaml v1.8.9
+	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cobra v1.1.3
 	github.com/spf13/viper v1.7.1
