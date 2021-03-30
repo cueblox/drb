@@ -1,4 +1,4 @@
-package blox
+package profile
 
 import (
 	"testing"
