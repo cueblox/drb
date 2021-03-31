@@ -1,0 +1,4 @@
+dockers:
+  - image_templates:
+      - ghcr.io/devrel-blox/drb:latest
+      - ghcr.io/devrel-blox/drb:{{ .Tag }}
