@@ -54,7 +54,7 @@ func convertModels(cfg *config.BloxConfig) map[string]error {
 
 	for _, model := range blox.Models {
 		// Attempt to decode all the YAML files with this directory as model
-		fmt.Println("Checking for ", model.ID, " markdown in ", model.Folder)
+		fmt.Printf("Checking for %s markdown files in %s\n", model.ID, path.Join(cfg.Base, cfg.Source, model.Folder))
 
 		filepath.Walk(path.Join(cfg.Base, cfg.Source, model.Folder),
 			func(path string, info os.FileInfo, err error) error {

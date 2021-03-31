@@ -1,21 +1,17 @@
 package markdown
 
 import (
-	"fmt"
 	"strings"
 )
 
 func ToYAML(raw string) (string, error) {
 	var content strings.Builder
 	var err error
-	fmt.Printf("contains %d lines\n", strings.Count(raw, "\n"))
 	lines := strings.Split(raw, "\n")
 	var inBody bool
 	for i, line := range lines {
 		// remove first delimiter
-		if i == 0 {
-			fmt.Printf("skipping line %d, %s\n", i, line)
-		} else {
+		if i != 0 {
 			if !inBody {
 				// this is last delimiter
 				// replace with 'body: |' and

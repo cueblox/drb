@@ -21,7 +21,6 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/devrel-blox/drb/blox"
 	"github.com/devrel-blox/drb/blox/profile"
 	"github.com/devrel-blox/drb/config"
@@ -55,9 +54,9 @@ func validateModels(cfg *config.BloxConfig) map[string]error {
 	// We want to validate all the YAML for the models that we're aware of.
 	for _, model := range blox.Models {
 		// Attempt to decode all the YAML files with this directory as model
-		fmt.Println("Checking for ", model.ID, " YAML in ", model.Folder)
+		fmt.Printf("Validating %s YAML files in %s\n", model.ID, path.Join(cfg.Base, cfg.Destination, model.Folder))
 
-		filepath.Walk(path.Join(cfg.Base, cfg.Source, model.Folder),
+		filepath.Walk(path.Join(cfg.Base, cfg.Destination, model.Folder),
 			func(path string, info os.FileInfo, err error) error {
 				if err != nil {
 					// Squash, we've not even validated that it's a supported ext
@@ -82,9 +81,9 @@ func validateModels(cfg *config.BloxConfig) map[string]error {
 					return nil
 				}
 
-				spew.Println(profile)
+				//spew.Println(profile)
 
-				fmt.Println(fmt.Sprintf("Profile '%s' loaded successfully", profile.FirstName))
+				fmt.Printf("Profile '%s' validated successfully\n", profile.FirstName)
 
 				return nil
 
