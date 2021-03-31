@@ -11,11 +11,10 @@ import (
 )
 
 type Article struct {
-	baseModel `json:",omitempty"`
+	BaseModel `json:",omitempty"`
 
-	Title     string  `json:"title"`
-	ProfileID string  `json:"profile_id"`
-	Profile   Profile `json:"author"`
+	Title     string `json:"title"`
+	ProfileID string `json:"profile_id"`
 }
 
 const CUE = `title: string

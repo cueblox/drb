@@ -77,16 +77,22 @@ func validateModels(cfg *config.BloxConfig) map[string]error {
 				switch model.ID {
 				case "profile":
 					{
-						_, err = blox.ProfileFromYAML(path)
+						_, err := blox.ProfileFromYAML(path)
+						if err != nil {
+							failedModels[path] = err
+							return nil
+						}
+
 					}
 				case "article":
 					{
-						_, err = blox.ArticleFromYAML(path)
+						_, err := blox.ArticleFromYAML(path)
+
+						if err != nil {
+							failedModels[path] = err
+							return nil
+						}
 					}
-				}
-				if err != nil {
-					failedModels[path] = err
-					return nil
 				}
 
 				return nil

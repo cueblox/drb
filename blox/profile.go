@@ -11,7 +11,7 @@ import (
 )
 
 type Profile struct {
-	baseModel `json:",omitempty"`
+	BaseModel `json:",omitempty"`
 
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
@@ -19,7 +19,7 @@ type Profile struct {
 	Company string `json:"company"`
 	Title   string `json:"title"`
 
-	SocialAccounts []SocialAccount `json:"social_accounts"`
+	SocialAccounts []SocialAccount `json:"social_accounts,omitempty"`
 }
 
 type SocialAccount struct {

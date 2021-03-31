@@ -132,7 +132,7 @@ func (m Model) New(slug string) error {
 
 // baseModel defines fields used by all drb
 // models
-type baseModel struct {
+type BaseModel struct {
 	ID      string
 	Body    string
 	BodyRaw string
