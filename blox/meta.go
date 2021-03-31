@@ -20,6 +20,12 @@ var Models = []Model{
 		Folder:     "profiles",
 		ForeignKey: "profile_id",
 	},
+	{
+		ID:         "article",
+		Name:       "Article",
+		Folder:     "articles",
+		ForeignKey: "article_id",
+	},
 }
 
 type Model struct {
