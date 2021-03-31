@@ -1,4 +1,4 @@
-package article
+package blox
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func TestProfileDecoding(t *testing.T) {
+func TestArticleDecoding(t *testing.T) {
 	expected := Article{
 		Title: "Test",
 	}

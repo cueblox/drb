@@ -86,6 +86,20 @@ func (m Model) New(slug string) error {
 	defer f.Close()
 
 	switch m.ID {
+	case "article":
+		exampleArticle := Article{
+			Title: "My Title",
+		}
+
+		bytes, err := yaml.Marshal(exampleArticle)
+		if err != nil {
+			return err
+		}
+
+		f.WriteString("---\n")
+		f.Write(bytes)
+		f.WriteString("---\n")
+
 	case "profile":
 		exampleProfile := Profile{
 			FirstName: "FirstName",
@@ -110,7 +124,7 @@ func (m Model) New(slug string) error {
 		f.WriteString("---\n")
 
 	default:
-		return errors.New(fmt.Sprintf("Generator doesn't support %s yet", m.ID))
+		return fmt.Errorf("Generator doesn't support %s yet", m.ID)
 	}
 
 	return nil
@@ -119,7 +133,7 @@ func (m Model) New(slug string) error {
 // baseModel defines fields used by all drb
 // models
 type baseModel struct {
-	ID      string `json:"id" yaml:"id"`
-	Body    string `json:"body" yaml:"body"`         //filled in by processing
-	BodyRaw string `json:"body_raw" yaml:"body_raw"` //filled in by processing
+	ID      string
+	Body    string
+	BodyRaw string
 }

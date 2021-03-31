@@ -74,41 +74,23 @@ func validateModels(cfg *config.BloxConfig) map[string]error {
 					return nil
 				}
 
-				profile, err := blox.ProfileFromYAML(path)
+				switch model.ID {
+				case "profile":
+					{
+						_, err = blox.ProfileFromYAML(path)
+					}
+				case "article":
+					{
+						_, err = blox.ArticleFromYAML(path)
+					}
+				}
 				if err != nil {
 					failedModels[path] = err
 					return nil
 				}
 
-				//spew.Println(profile)
-
-				fmt.Printf("Profile '%s' validated successfully\n", profile.FirstName)
-
 				return nil
 
-				// modelYaml, err := ioutil.ReadFile(path)
-
-				// if err != nil {
-				// 	failedModels[path] = err
-				// 	return nil
-				// }
-
-				// var profile blox.Profile
-
-				// err = yaml.Unmarshal(modelYaml, &profile)
-
-				// if err != nil {
-				// 	failedModels[path] = err
-				// 	return nil
-				// }
-
-				// if err := profile.Validate(); err != nil {
-				// 	failedModels[path] = err
-				// 	return nil
-				// }
-
-				// fmt.Println("Valid ", model.Name, ": ", path)
-				return nil
 			})
 	}
 

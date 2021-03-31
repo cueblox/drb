@@ -1,4 +1,4 @@
-package article
+package blox
 
 import (
 	"fmt"
@@ -8,23 +8,22 @@ import (
 	"cuelang.org/go/cue"
 	"cuelang.org/go/encoding/gocode/gocodec"
 	"cuelang.org/go/encoding/yaml"
-	"github.com/devrel-blox/drb/blox"
-
-	"github.com/devrel-blox/drb/blox/profile"
 )
 
 type Article struct {
-	blox.BaseModel
+	baseModel `json:",omitempty"`
 
-	Title  string          `json:"title"`
-	Author profile.Profile `json:"author"`
+	Title     string  `json:"title"`
+	ProfileID string  `json:"profile_id"`
+	Profile   Profile `json:"author"`
 }
 
 const CUE = `title: string
+profile_id?: string
 
 `
 
-func LoadFromYAML(path string) (Article, error) {
+func ArticleFromYAML(path string) (Article, error) {
 	var cueRuntime cue.Runtime
 	articleInstance, err := cueRuntime.Compile("article", CUE)
 
@@ -49,12 +48,14 @@ func LoadFromYAML(path string) (Article, error) {
 	err = codec.Encode(merged.Value(), &article)
 
 	if err != nil {
-		return Article{}, fmt.Errorf("Encode error: %w", err)
+		return Article{}, fmt.Errorf("encoding error: %w", err)
 	}
 	ext := filepath.Ext(path)
 	slug := strings.Replace(filepath.Base(path), ext, "", -1)
 
 	article.ID = slug
+
+	fmt.Printf("Article '%s' validated successfully\n", article.ID)
 
 	return article, nil
 }

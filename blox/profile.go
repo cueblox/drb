@@ -11,7 +11,7 @@ import (
 )
 
 type Profile struct {
-	baseModel
+	baseModel `json:",omitempty"`
 
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
@@ -84,6 +84,7 @@ func ProfileFromYAML(path string) (Profile, error) {
 	slug := strings.Replace(filepath.Base(path), ext, "", -1)
 
 	profile.ID = slug
+	fmt.Printf("Profile '%s' validated successfully\n", profile.FirstName)
 
 	return profile, nil
 }
