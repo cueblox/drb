@@ -2,6 +2,8 @@ package profile
 
 import (
 	"fmt"
+	"path/filepath"
+	"strings"
 
 	"cuelang.org/go/cue"
 	"cuelang.org/go/encoding/gocode/gocodec"
@@ -78,6 +80,10 @@ func LoadFromYAML(path string) (Profile, error) {
 	if err != nil {
 		return Profile{}, fmt.Errorf("Encode error: %w", err)
 	}
+	ext := filepath.Ext(path)
+	slug := strings.Replace(filepath.Base(path), ext, "", -1)
+
+	profile.ID = slug
 
 	return profile, nil
 }

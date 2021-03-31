@@ -74,6 +74,7 @@ func (m Model) New(slug string) error {
 		return err
 	}
 	defer f.Close()
+	// TODO implement templates
 	f.WriteString("---")
 
 	return nil

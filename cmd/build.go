@@ -16,6 +16,7 @@ limitations under the License.
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path"
@@ -27,10 +28,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// validateCmd represents the validate command
-var validateCmd = &cobra.Command{
-	Use:   "validate",
-	Short: "A brief description of your command",
+// buildCmd represents the build command
+var buildCmd = &cobra.Command{
+	Use:   "build",
+	Short: "Build content source into a JSON file",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 
@@ -41,20 +42,32 @@ to quickly create a Cobra application.`,
 		cfg, err := config.Load()
 		cobra.CheckErr(err)
 
+		// convert markdown to yaml
+		for model, err := range convertModels(cfg) {
+			fmt.Println("A model failed to convert: ", model, " because ", err)
+		}
+		// validate yaml
 		for model, err := range validateModels(cfg) {
 			fmt.Println("A model failed to validate: ", model, " because ", err)
 		}
-
+		data, err := aggregateModels(cfg)
+		cobra.CheckErr(err)
+		f, err := os.Create(path.Join(cfg.Base, cfg.Destination, "data.json"))
+		cobra.CheckErr(err)
+		defer f.Close()
+		bb, err := json.Marshal(data)
+		cobra.CheckErr(err)
+		_, err = f.Write(bb)
+		cobra.CheckErr(err)
+		fmt.Printf("output data to %s\n", path.Join(cfg.Base, cfg.Destination, "data.json"))
 	},
 }
 
-func validateModels(cfg *config.BloxConfig) map[string]error {
-	failedModels := make(map[string]error)
-
-	// We want to validate all the YAML for the models that we're aware of.
+func aggregateModels(cfg *config.BloxConfig) (Data, error) {
+	data := NewData()
 	for _, model := range blox.Models {
 		// Attempt to decode all the YAML files with this directory as model
-		fmt.Printf("Validating %s YAML files in %s\n", model.ID, path.Join(cfg.Base, cfg.Destination, model.Folder))
+		fmt.Printf("Loading %s YAML files in %s\n", model.ID, path.Join(cfg.Base, cfg.Destination, model.Folder))
 
 		filepath.Walk(path.Join(cfg.Base, cfg.Destination, model.Folder),
 			func(path string, info os.FileInfo, err error) error {
@@ -77,55 +90,32 @@ func validateModels(cfg *config.BloxConfig) map[string]error {
 
 				profile, err := profile.LoadFromYAML(path)
 				if err != nil {
-					failedModels[path] = err
-					return nil
+
+					return err
 				}
 
 				//spew.Println(profile)
 
 				fmt.Printf("Profile '%s' validated successfully\n", profile.FirstName)
-
+				data.Profiles = append(data.Profiles, profile)
 				return nil
 
-				// modelYaml, err := ioutil.ReadFile(path)
-
-				// if err != nil {
-				// 	failedModels[path] = err
-				// 	return nil
-				// }
-
-				// var profile blox.Profile
-
-				// err = yaml.Unmarshal(modelYaml, &profile)
-
-				// if err != nil {
-				// 	failedModels[path] = err
-				// 	return nil
-				// }
-
-				// if err := profile.Validate(); err != nil {
-				// 	failedModels[path] = err
-				// 	return nil
-				// }
-
-				// fmt.Println("Valid ", model.Name, ": ", path)
-				return nil
 			})
 	}
 
-	return failedModels
+	return data, nil
 }
 
 func init() {
-	rootCmd.AddCommand(validateCmd)
+	rootCmd.AddCommand(buildCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// validateCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// buildCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// validateCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// buildCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
