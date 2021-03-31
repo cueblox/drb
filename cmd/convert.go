@@ -17,7 +17,14 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"path"
+	"path/filepath"
+	"strings"
 
+	"github.com/devrel-blox/drb/blox"
+	"github.com/devrel-blox/drb/config"
+	"github.com/devrel-blox/drb/encoding/markdown"
 	"github.com/spf13/cobra"
 )
 
@@ -32,10 +39,114 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("convert called")
+
+		cfg, err := config.Load()
+		cobra.CheckErr(err)
+
+		for model, err := range convertModels(cfg) {
+			fmt.Println("A model failed to convert: ", model, " because ", err)
+		}
 	},
 }
 
+func convertModels(cfg *config.BloxConfig) map[string]error {
+	failedModels := make(map[string]error)
+
+	for _, model := range blox.Models {
+		// Attempt to decode all the YAML files with this directory as model
+		fmt.Println("Checking for ", model.ID, " markdown in ", model.Folder)
+
+		filepath.Walk(path.Join(cfg.Base, cfg.Source, model.Folder),
+			func(path string, info os.FileInfo, err error) error {
+				if err != nil {
+					// Squash, we've not even validated that it's a supported ext
+					return nil
+				}
+
+				if info.IsDir() {
+					return nil
+				}
+
+				ext := filepath.Ext(path)
+				slug := strings.Replace(filepath.Base(path), ext, "", -1)
+				// if ext != cfg.DefaultExtension {
+				// Should be SupportedExtensions?
+				if ext != ".md" && ext != ".mdx" {
+					return nil
+				}
+				f, err := os.Open(path)
+				if err != nil {
+					failedModels[path] = err
+					return nil
+				}
+				bb, err := os.ReadFile(path)
+				if err != nil {
+					failedModels[path] = err
+					return nil
+				}
+				f.Close()
+				md, err := markdown.ToYAML(string(bb))
+				if err != nil {
+					failedModels[path] = err
+					return nil
+				}
+				err = os.MkdirAll(model.DestinationContentPath(), 0755)
+				if err != nil {
+					failedModels[path] = err
+					return nil
+				}
+				mdf, err := os.Create(model.DestinationFilePath(slug))
+				if err != nil {
+					failedModels[path] = err
+					return nil
+				}
+				_, err = mdf.WriteString(md)
+				if err != nil {
+					failedModels[path] = err
+					return nil
+				}
+				mdf.Close()
+				/*	profile, err := profile.LoadFromYAML(path)
+					if err != nil {
+						failedModels[path] = err
+						return nil
+					}
+
+					spew.Println(profile)
+				*/
+
+				fmt.Println(fmt.Sprintf("Profile '%s' converted", slug))
+
+				return nil
+
+				// modelYaml, err := ioutil.ReadFile(path)
+
+				// if err != nil {
+				// 	failedModels[path] = err
+				// 	return nil
+				// }
+
+				// var profile blox.Profile
+
+				// err = yaml.Unmarshal(modelYaml, &profile)
+
+				// if err != nil {
+				// 	failedModels[path] = err
+				// 	return nil
+				// }
+
+				// if err := profile.Validate(); err != nil {
+				// 	failedModels[path] = err
+				// 	return nil
+				// }
+
+				// fmt.Println("Valid ", model.Name, ": ", path)
+				return nil
+			})
+	}
+
+	return failedModels
+}
 func init() {
 	rootCmd.AddCommand(convertCmd)
 
