@@ -2,10 +2,13 @@ package blox
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path"
 
+	"github.com/devrel-blox/drb/blox/profile"
 	"github.com/devrel-blox/drb/config"
+	"github.com/goccy/go-yaml"
 	"github.com/spf13/cobra"
 )
 
@@ -19,6 +22,7 @@ var Models = []Model{
 		Name:       "Profile",
 		Folder:     "profiles",
 		ForeignKey: "profile_id",
+		Cue:        profile.CUE,
 	},
 }
 
@@ -27,6 +31,7 @@ type Model struct {
 	Name       string
 	Folder     string
 	ForeignKey string
+	Cue        string
 }
 
 // GetModel finds a Model definition and returns
@@ -74,8 +79,33 @@ func (m Model) New(slug string) error {
 		return err
 	}
 	defer f.Close()
-	// TODO implement templates
-	f.WriteString("---")
+
+	switch m.ID {
+	case "profile":
+		exampleProfile := profile.Profile{
+			FirstName: "FirstName",
+			LastName:  "LastName",
+			Company:   "Company",
+			Title:     "Title",
+			SocialAccounts: []profile.SocialAccount{
+				{
+					Network:  "twitter",
+					Username: "username",
+				},
+			},
+		}
+
+		bytes, err := yaml.Marshal(exampleProfile)
+		if err != nil {
+			return err
+		}
+
+		f.Write(bytes)
+		f.WriteString("\n")
+
+	default:
+		return errors.New(fmt.Sprintf("Generator doesn't support %s yet", m.ID))
+	}
 
 	return nil
 }
