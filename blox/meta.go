@@ -2,10 +2,12 @@ package blox
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path"
 
 	"github.com/devrel-blox/drb/config"
+	"github.com/goccy/go-yaml"
 	"github.com/spf13/cobra"
 )
 
@@ -19,6 +21,7 @@ var Models = []Model{
 		Name:       "Profile",
 		Folder:     "profiles",
 		ForeignKey: "profile_id",
+		Cue:        ProfileCue,
 	},
 	{
 		ID:         "article",
@@ -33,6 +36,7 @@ type Model struct {
 	Name       string
 	Folder     string
 	ForeignKey string
+	Cue        string
 }
 
 // GetModel finds a Model definition and returns
@@ -80,15 +84,41 @@ func (m Model) New(slug string) error {
 		return err
 	}
 	defer f.Close()
-	// TODO implement templates
-	f.WriteString("---")
+
+	switch m.ID {
+	case "profile":
+		exampleProfile := Profile{
+			FirstName: "FirstName",
+			LastName:  "LastName",
+			Company:   "Company",
+			Title:     "Title",
+			SocialAccounts: []SocialAccount{
+				{
+					Network:  "twitter",
+					Username: "username",
+				},
+			},
+		}
+
+		bytes, err := yaml.Marshal(exampleProfile)
+		if err != nil {
+			return err
+		}
+
+		f.WriteString("---\n")
+		f.Write(bytes)
+		f.WriteString("---\n")
+
+	default:
+		return errors.New(fmt.Sprintf("Generator doesn't support %s yet", m.ID))
+	}
 
 	return nil
 }
 
 // baseModel defines fields used by all drb
 // models
-type BaseModel struct {
+type baseModel struct {
 	ID      string `json:"id" yaml:"id"`
 	Body    string `json:"body" yaml:"body"`         //filled in by processing
 	BodyRaw string `json:"body_raw" yaml:"body_raw"` //filled in by processing

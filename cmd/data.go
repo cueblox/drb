@@ -1,20 +1,20 @@
 package cmd
 
 import (
-	"github.com/devrel-blox/drb/blox/article"
-	"github.com/devrel-blox/drb/blox/profile"
+	"github.com/devrel-blox/drb/blox"
 )
 
 type Data struct {
-	Profiles []profile.Profile `json:"profiles"`
-	Articles []article.Article `json:"articles"`
+	Profiles []blox.Profile `json:"profiles"`
+	Articles []blox.Article `json:"articles"`
 }
 
 func NewData() Data {
-	var profiles []profile.Profile
-	var articles []article.Article
+	var profiles []blox.Profile
+	var articles []blox.Article
 	return Data{
 		Profiles: profiles,
 		Articles: articles,
 	}
+
 }

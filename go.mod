@@ -3,8 +3,7 @@ module github.com/devrel-blox/drb
 go 1.16
 
 require (
-	cuelang.org/go v0.2.2
-	github.com/davecgh/go-spew v1.1.1
+	cuelang.org/go v0.3.0-beta.7
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/go-test/deep v1.0.7
 	github.com/goccy/go-yaml v1.8.9
@@ -17,6 +16,7 @@ require (
 	github.com/spf13/cobra v1.1.3
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/viper v1.7.1
+	github.com/stretchr/testify v1.7.0
 	golang.org/x/sys v0.0.0-20210330210617-4fbd30eecc44 // indirect
 	golang.org/x/text v0.3.5 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect

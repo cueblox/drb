@@ -22,7 +22,6 @@ import (
 	"path/filepath"
 
 	"github.com/devrel-blox/drb/blox"
-	"github.com/devrel-blox/drb/blox/profile"
 	"github.com/devrel-blox/drb/config"
 	"github.com/spf13/cobra"
 )
@@ -75,7 +74,7 @@ func validateModels(cfg *config.BloxConfig) map[string]error {
 					return nil
 				}
 
-				profile, err := profile.LoadFromYAML(path)
+				profile, err := blox.ProfileFromYAML(path)
 				if err != nil {
 					failedModels[path] = err
 					return nil

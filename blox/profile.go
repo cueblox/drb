@@ -1,4 +1,4 @@
-package profile
+package blox
 
 import (
 	"fmt"
@@ -8,11 +8,10 @@ import (
 	"cuelang.org/go/cue"
 	"cuelang.org/go/encoding/gocode/gocodec"
 	"cuelang.org/go/encoding/yaml"
-	"github.com/devrel-blox/drb/blox"
 )
 
 type Profile struct {
-	blox.BaseModel
+	baseModel
 
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
@@ -29,8 +28,9 @@ type SocialAccount struct {
 	Url      string `json:"url"`
 }
 
-const CUE = `first_name: "David" | "Brian"
+const ProfileCue = `first_name: "David" | "Brian"
 last_name: string
+age?: int
 company?: string
 title?: string
 social_accounts?: [#TwitterAccount | #GitHubAccount | #MiscellaneousAccount]
@@ -53,9 +53,9 @@ social_accounts?: [#TwitterAccount | #GitHubAccount | #MiscellaneousAccount]
 }
 `
 
-func LoadFromYAML(path string) (Profile, error) {
+func ProfileFromYAML(path string) (Profile, error) {
 	var cueRuntime cue.Runtime
-	profileInstance, err := cueRuntime.Compile("profile", CUE)
+	profileInstance, err := cueRuntime.Compile("profile", ProfileCue)
 
 	if err != nil {
 		return Profile{}, err

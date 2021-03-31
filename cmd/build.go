@@ -23,7 +23,6 @@ import (
 	"path/filepath"
 
 	"github.com/devrel-blox/drb/blox"
-	"github.com/devrel-blox/drb/blox/profile"
 	"github.com/devrel-blox/drb/config"
 	"github.com/spf13/cobra"
 )
@@ -88,7 +87,7 @@ func aggregateModels(cfg *config.BloxConfig) (Data, error) {
 					return nil
 				}
 
-				profile, err := profile.LoadFromYAML(path)
+				profile, err := blox.ProfileFromYAML(path)
 				if err != nil {
 
 					return err
