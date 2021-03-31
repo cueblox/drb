@@ -100,8 +100,9 @@ func (m Model) New(slug string) error {
 			return err
 		}
 
+		f.WriteString("---\n")
 		f.Write(bytes)
-		f.WriteString("\n")
+		f.WriteString("---\n")
 
 	default:
 		return errors.New(fmt.Sprintf("Generator doesn't support %s yet", m.ID))
