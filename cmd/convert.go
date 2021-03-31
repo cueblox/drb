@@ -115,7 +115,7 @@ func convertModels(cfg *config.BloxConfig) map[string]error {
 					spew.Println(profile)
 				*/
 
-				fmt.Println(fmt.Sprintf("Profile '%s' converted", slug))
+				fmt.Println(fmt.Sprintf("Markdown file '%s' converted", slug))
 
 				return nil
 

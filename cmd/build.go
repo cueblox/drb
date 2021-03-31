@@ -86,17 +86,25 @@ func aggregateModels(cfg *config.BloxConfig) (Data, error) {
 				if ext != ".yaml" && ext != ".yml" {
 					return nil
 				}
-
-				profile, err := blox.ProfileFromYAML(path)
-				if err != nil {
-
-					return err
+				switch model.ID {
+				case "profile":
+					{
+						profile, err := blox.ProfileFromYAML(path)
+						if err != nil {
+							return err
+						}
+						data.Profiles = append(data.Profiles, profile)
+					}
+				case "article":
+					{
+						article, err := blox.ArticleFromYAML(path)
+						if err != nil {
+							return err
+						}
+						data.Articles = append(data.Articles, article)
+					}
 				}
 
-				//spew.Println(profile)
-
-				fmt.Printf("Profile '%s' validated successfully\n", profile.FirstName)
-				data.Profiles = append(data.Profiles, profile)
 				return nil
 
 			})
