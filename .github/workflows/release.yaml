@@ -2,8 +2,8 @@ name: goreleaser
 
 on:
   push:
-    # branches:
-    #   - "main"
+    branches:
+      - "main"
 
 jobs:
   goreleaser:
@@ -24,3 +24,5 @@ jobs:
         with:
           version: latest
           args: release --rm-dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
