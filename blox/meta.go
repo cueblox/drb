@@ -71,5 +71,7 @@ func (m Model) New(slug string) error {
 // baseModel defines fields used by all drb
 // models
 type BaseModel struct {
-	ID string `json:"id" yaml:"id"`
+	ID      string `json:"id" yaml:"id"`
+	Body    string `json:"body" yaml:"body"`         //filled in by processing
+	BodyRaw string `json:"body_raw" yaml:"body_raw"` //filled in by processing
 }

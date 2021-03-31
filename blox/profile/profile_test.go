@@ -14,15 +14,18 @@ func TestProfileDecoding(t *testing.T) {
 		Company:   "MyOrg",
 		Title:     "DevRel",
 		SocialAccounts: []SocialAccount{
-			{Value: MiscellaneousAccount{
-				Url: "https://www.linkedin.com/random",
-			}},
-			{Value: GitHubAccount{
+			{
+				Network: "linkedin",
+				Url:     "https://www.linkedin.com/random",
+			},
+			{
+				Network:  "github",
 				Username: "bketelsen",
-			}},
-			{Value: TwitterAccount{
+			},
+			{
+				Network:  "twitter",
 				Username: "rawkode",
-			}},
+			},
 		},
 	}
 
