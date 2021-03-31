@@ -6,7 +6,6 @@ import (
 	"os"
 	"path"
 
-	"github.com/devrel-blox/drb/blox/profile"
 	"github.com/devrel-blox/drb/config"
 	"github.com/goccy/go-yaml"
 	"github.com/spf13/cobra"
@@ -22,7 +21,7 @@ var Models = []Model{
 		Name:       "Profile",
 		Folder:     "profiles",
 		ForeignKey: "profile_id",
-		Cue:        profile.CUE,
+		Cue:        ProfileCue,
 	},
 }
 
@@ -82,12 +81,12 @@ func (m Model) New(slug string) error {
 
 	switch m.ID {
 	case "profile":
-		exampleProfile := profile.Profile{
+		exampleProfile := Profile{
 			FirstName: "FirstName",
 			LastName:  "LastName",
 			Company:   "Company",
 			Title:     "Title",
-			SocialAccounts: []profile.SocialAccount{
+			SocialAccounts: []SocialAccount{
 				{
 					Network:  "twitter",
 					Username: "username",
@@ -113,7 +112,7 @@ func (m Model) New(slug string) error {
 
 // baseModel defines fields used by all drb
 // models
-type BaseModel struct {
+type baseModel struct {
 	ID      string `json:"id" yaml:"id"`
 	Body    string `json:"body" yaml:"body"`         //filled in by processing
 	BodyRaw string `json:"body_raw" yaml:"body_raw"` //filled in by processing
