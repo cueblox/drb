@@ -28,6 +28,7 @@ var (
 	base        string
 	source      string
 	destination string
+	static      string
 	templates   string
 	skipConfig  bool
 	extension   string
@@ -76,6 +77,7 @@ func writeConfigFile() error {
 		Source:           source,
 		Templates:        templates,
 		Destination:      destination,
+		Static:           static,
 		DefaultExtension: extension,
 	}
 	f, err := os.Create("blox.yaml")
@@ -101,6 +103,10 @@ func createDirectories(root string) error {
 		return errors.New("creating template directory")
 	}
 
+	err = os.MkdirAll(staticDir(root), 0755)
+	if err != nil {
+		return errors.New("creating dir directory")
+	}
 	return nil
 }
 
@@ -114,22 +120,19 @@ func templateDir(root string) string {
 	return path.Join(root, base, templates)
 }
 
+func staticDir(root string) string {
+	return path.Join(root, base, static)
+}
+
 func init() {
 	rootCmd.AddCommand(initCmd)
 
 	initCmd.Flags().StringVarP(&base, "base", "b", "content", "base directory for pre- and post- processed content")
 	initCmd.Flags().StringVarP(&source, "source", "s", "source", "where pre-processed content will be stored (source markdown)")
 	initCmd.Flags().StringVarP(&destination, "destination", "d", "out", "where post-processed content will be stored (output json)")
+	initCmd.Flags().StringVarP(&static, "static", "k", "static", "where static files will be stored")
 	initCmd.Flags().StringVarP(&templates, "template", "t", "templates", "where content templates will be stored")
 	initCmd.Flags().StringVarP(&extension, "extension", "e", ".md", "default file extension for new content")
 	initCmd.Flags().BoolVarP(&skipConfig, "skip", "c", false, "don't write a configuration file")
-	// Here you will define your flags and configuration settings.
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// initCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// initCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

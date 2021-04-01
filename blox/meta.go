@@ -28,6 +28,14 @@ var Models = []Model{
 		Name:       "Article",
 		Folder:     "articles",
 		ForeignKey: "article_id",
+		Cue:        ArticleCUE,
+	},
+	{
+		ID:         "category",
+		Name:       "Category",
+		Folder:     "categories",
+		ForeignKey: "category_id",
+		Cue:        CategoryCUE,
 	},
 }
 
@@ -50,6 +58,11 @@ func GetModel(id string) (Model, error) {
 	return Model{}, errors.New("model not found")
 }
 
+func (m Model) StaticContentPath() string {
+	cfg, err := config.Load()
+	cobra.CheckErr(err)
+	return path.Join(cfg.Base, cfg.Static)
+}
 func (m Model) SourceContentPath() string {
 	cfg, err := config.Load()
 	cobra.CheckErr(err)
@@ -99,7 +112,19 @@ func (m Model) New(slug string) error {
 		f.WriteString("---\n")
 		f.Write(bytes)
 		f.WriteString("---\n")
+	case "category":
+		exampleCategory := Category{
+			Title: "My Title",
+		}
 
+		bytes, err := yaml.Marshal(exampleCategory)
+		if err != nil {
+			return err
+		}
+
+		f.WriteString("---\n")
+		f.Write(bytes)
+		f.WriteString("---\n")
 	case "profile":
 		exampleProfile := Profile{
 			FirstName: "FirstName",
@@ -124,7 +149,7 @@ func (m Model) New(slug string) error {
 		f.WriteString("---\n")
 
 	default:
-		return fmt.Errorf("Generator doesn't support %s yet", m.ID)
+		return fmt.Errorf("generator doesn't support %s yet", m.ID)
 	}
 
 	return nil
@@ -134,6 +159,6 @@ func (m Model) New(slug string) error {
 // models
 type BaseModel struct {
 	ID      string
-	Body    string
-	BodyRaw string
+	Body    string `json:"body"`
+	BodyRaw string `json:"body_raw"`
 }

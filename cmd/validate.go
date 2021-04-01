@@ -93,6 +93,15 @@ func validateModels(cfg *config.BloxConfig) map[string]error {
 							return nil
 						}
 					}
+				case "category":
+					{
+						_, err := blox.CategoryFromYAML(path)
+
+						if err != nil {
+							failedModels[path] = err
+							return nil
+						}
+					}
 				}
 
 				return nil

@@ -103,6 +103,14 @@ func aggregateModels(cfg *config.BloxConfig) (Data, error) {
 						}
 						data.Articles = append(data.Articles, article)
 					}
+				case "category":
+					{
+						category, err := blox.CategoryFromYAML(path)
+						if err != nil {
+							return err
+						}
+						data.Categories = append(data.Categories, category)
+					}
 				}
 
 				return nil

@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	cuelang.org/go v0.3.0-beta.7
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/go-test/deep v1.0.7
 	github.com/goccy/go-yaml v1.8.9
