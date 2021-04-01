@@ -14,6 +14,7 @@ type BloxConfig struct {
 	Source           string `json:"source"`
 	Destination      string `json:"destination"`
 	Templates        string `json:"templates"`
+	Static           string `json:"static"`
 	DefaultExtension string `json:"default_extension"`
 }
 
