@@ -1,4 +1,43 @@
+project_name: drb
+
+builds:
+  - id: drb
+    main: ./main.go
+    binary: drb
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    env:
+      - GO111MODULE=on
+      - MACOSX_DEPLOYMENT_TARGET=10.11
+
 dockers:
   - image_templates:
-      - ghcr.io/devrel-blox/drb:latest
-      - ghcr.io/devrel-blox/drb:{{ .Tag }}
+      - "ghcr.io/devrel-blox/drb:{{ .Tag }}-amd64"
+    binaries:
+      - drb
+    use_buildx: true
+    build_flag_templates:
+      - --platform=linux/amd64
+  - image_templates:
+      - "ghcr.io/devrel-blox/drb:{{ .Tag }}-arm64"
+    binaries:
+      - drb
+    use_buildx: true
+    build_flag_templates:
+      - --platform=linux/arm64
+      -
+docker_manifests:
+  - name_template: "ghcr.io/devrel-blox/drb:latest"
+    image_templates:
+      - "ghcr.io/devrel-blox/drb:{{ .Tag }}-amd64"
+      - "ghcr.io/devrel-blox/drb:{{ .Tag }}-arm64"
+
+  - name_template: "ghcr.io/devrel-blox/drb:{{ .Tag }}"
+    image_templates:
+      - "ghcr.io/devrel-blox/drb:{{ .Tag }}-amd64"
+      - "ghcr.io/devrel-blox/drb:{{ .Tag }}-arm64"

@@ -1,3 +1,5 @@
-FROM scratch
-ENTRYPOINT ["/drb"]
+FROM alpine:3.13
+
 COPY drb /
+
+ENTRYPOINT ["/drb"]
