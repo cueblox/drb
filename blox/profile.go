@@ -27,7 +27,7 @@ type Profile struct {
 type SocialAccount struct {
 	Network  string `json:"network"`
 	Username string `json:"username"`
-	Url      string `json:"url",omitempty`
+	Url      string `json:"url,omitempty"`
 }
 
 //go:embed profile.cue
