@@ -2,13 +2,13 @@ package blox
 
 import (
 	"fmt"
+	"io/ioutil"
 	"path/filepath"
 	"strings"
 
-	"cuelang.org/go/cue"
-	"cuelang.org/go/encoding/gocode/gocodec"
-	"cuelang.org/go/encoding/yaml"
-	"github.com/davecgh/go-spew/spew"
+	"cuelang.org/go/cuego"
+	"github.com/devrel-blox/drb/cueutils"
+	"github.com/goccy/go-yaml"
 )
 
 type Article struct {
@@ -31,68 +31,35 @@ type Article struct {
 	ProfileID string `json:"profile_id"`
 }
 
-const ArticleCUE = `title: string
-excerpt?: string
-draft?: bool
-featured?: bool
-cover_image?: string
-share_image?: string
-profile_id?: string
-category_id?: string
-body_raw?: string
-body?: string
-id?: string
+//go:embed article.cue
+var ArticleCue string
 
-`
-
-/*
-
-excerpt?: string
-draft?: bool
-featured?: bool
-cover_image?: string
-share_image?: string
-category_id? string
-profile_id?: string
-*/
 func ArticleFromYAML(path string) (Article, error) {
-	var cueRuntime cue.Runtime
-	articleInstance, err := cueRuntime.Compile("article", ArticleCUE)
-
+	err := cuego.Constrain(&Article{}, ArticleCue)
 	if err != nil {
-		fmt.Println("Error compiling CUE ")
-		return Article{}, err
+		return Article{}, cueutils.UsefulError(err)
 	}
 
-	valueInstance, err := yaml.Decode(&cueRuntime, path, nil)
+	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
-
-		fmt.Println("Error decoding yaml ")
-		return Article{}, fmt.Errorf("parse YAML file error: %w", err)
-	}
-
-	merged := cue.Merge(articleInstance, valueInstance)
-	err = merged.Value().Validate()
-	if err != nil {
-
-		fmt.Println("Error merging ")
-		return Article{}, fmt.Errorf("validation error: %w", err)
+		return Article{}, cueutils.UsefulError(err)
 	}
 
 	var article Article
-	codec := gocodec.New(&cueRuntime, &gocodec.Config{})
 
-	err = codec.Encode(merged.Value(), &article)
-
+	err = yaml.Unmarshal(bytes, &article)
 	if err != nil {
-		return Article{}, fmt.Errorf("encoding error: %w", err)
+		return Article{}, cueutils.UsefulError(err)
 	}
-	spew.Println(article)
+
+	err = cuego.Complete(&article)
+	if err != nil {
+		return Article{}, cueutils.UsefulError(err)
+	}
 	ext := filepath.Ext(path)
 	slug := strings.Replace(filepath.Base(path), ext, "", -1)
 
 	article.ID = slug
-
 	fmt.Printf("Article '%s' validated successfully\n", article.ID)
 
 	return article, nil

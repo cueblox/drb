@@ -46,8 +46,6 @@ social_accounts:
 
 	err := yaml.Unmarshal([]byte(data), &profile)
 
-	// spew.Println(profile)
-
 	if nil != err {
 		t.Error("Failed to unmarshall YAML")
 	}
