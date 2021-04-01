@@ -19,8 +19,6 @@ title: Test
 
 	err := yaml.Unmarshal([]byte(data), &article)
 
-	// spew.Println(profile)
-
 	if nil != err {
 		t.Error("Failed to unmarshall YAML")
 	}
