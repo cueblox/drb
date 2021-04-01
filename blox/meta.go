@@ -7,7 +7,6 @@ import (
 	"path"
 
 	"github.com/devrel-blox/drb/config"
-	"github.com/goccy/go-yaml"
 	"github.com/spf13/cobra"
 )
 
@@ -80,6 +79,18 @@ func (m Model) SourceFilePath(slug string) string {
 
 	return path.Join(cfg.Base, cfg.Source, m.Folder, fileName)
 }
+func (m Model) TemplatePath() string {
+	cfg, err := config.Load()
+	cobra.CheckErr(err)
+	return path.Join(cfg.Base, cfg.Templates, m.Folder)
+}
+func (m Model) TemplateFilePath(slug string) string {
+	cfg, err := config.Load()
+	cobra.CheckErr(err)
+	fileName := slug + cfg.DefaultExtension
+
+	return path.Join(cfg.Base, cfg.Templates, m.Folder, fileName)
+}
 func (m Model) DestinationFilePath(slug string) string {
 	cfg, err := config.Load()
 	cobra.CheckErr(err)
@@ -87,12 +98,13 @@ func (m Model) DestinationFilePath(slug string) string {
 
 	return path.Join(cfg.Base, cfg.Destination, m.Folder, fileName)
 }
-func (m Model) New(slug string) error {
-	err := os.MkdirAll(m.SourceContentPath(), 0744)
+func (m Model) New(slug string, destination string) error {
+	err := os.MkdirAll(destination, 0744)
 	if err != nil {
 		return err
 	}
-	f, err := os.Create(m.SourceFilePath(slug))
+	joined := path.Join(destination, slug)
+	f, err := os.Create(joined)
 	if err != nil {
 		return err
 	}
@@ -100,53 +112,11 @@ func (m Model) New(slug string) error {
 
 	switch m.ID {
 	case "article":
-		exampleArticle := Article{
-			Title: "My Title",
-		}
-
-		bytes, err := yaml.Marshal(exampleArticle)
-		if err != nil {
-			return err
-		}
-
-		f.WriteString("---\n")
-		f.Write(bytes)
-		f.WriteString("---\n")
+		f.Write([]byte(ArticleTemplate))
 	case "category":
-		exampleCategory := Category{
-			Title: "My Title",
-		}
-
-		bytes, err := yaml.Marshal(exampleCategory)
-		if err != nil {
-			return err
-		}
-
-		f.WriteString("---\n")
-		f.Write(bytes)
-		f.WriteString("---\n")
+		f.Write([]byte(CategoryTemplate))
 	case "profile":
-		exampleProfile := Profile{
-			FirstName: "FirstName",
-			LastName:  "LastName",
-			Company:   "Company",
-			Title:     "Title",
-			SocialAccounts: []SocialAccount{
-				{
-					Network:  "twitter",
-					Username: "username",
-				},
-			},
-		}
-
-		bytes, err := yaml.Marshal(exampleProfile)
-		if err != nil {
-			return err
-		}
-
-		f.WriteString("---\n")
-		f.Write(bytes)
-		f.WriteString("---\n")
+		f.Write([]byte(ProfileTemplate))
 
 	default:
 		return fmt.Errorf("generator doesn't support %s yet", m.ID)

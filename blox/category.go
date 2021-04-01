@@ -25,6 +25,9 @@ type Category struct {
 //go:embed category.cue
 var CategoryCue string
 
+//go:embed odds-ends.md
+var CategoryTemplate string
+
 func CategoryFromYAML(path string) (Category, error) {
 	err := cuego.Constrain(&Category{}, CategoryCue)
 	if err != nil {

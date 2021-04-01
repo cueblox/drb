@@ -20,6 +20,7 @@ import (
 	"os"
 	"path"
 
+	"github.com/devrel-blox/drb/blox"
 	"github.com/devrel-blox/drb/config"
 	"github.com/spf13/cobra"
 )
@@ -62,10 +63,17 @@ each content type with pre-filled values.
 		}
 		err = createDirectories(root)
 		cobra.CheckErr(err)
-
 		if !skipConfig {
 			err = writeConfigFile()
 			cobra.CheckErr(err)
+		}
+		for _, model := range blox.Models {
+
+			model, err := blox.GetModel(model.ID)
+			cobra.CheckErr(err)
+			cfg, err := config.Load()
+			cobra.CheckErr(err)
+			cobra.CheckErr(model.New(model.ID+cfg.DefaultExtension, model.TemplatePath()))
 		}
 
 	},
