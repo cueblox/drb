@@ -35,6 +35,9 @@ type Article struct {
 //go:embed article.cue
 var ArticleCue string
 
+//go:embed first-post.md
+var ArticleTemplate string
+
 func ArticleFromYAML(path string) (Article, error) {
 	err := cuego.Constrain(&Article{}, ArticleCue)
 	if err != nil {

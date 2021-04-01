@@ -20,6 +20,7 @@ import (
 	"path"
 
 	"github.com/devrel-blox/drb/blox"
+	"github.com/devrel-blox/drb/config"
 	"github.com/spf13/cobra"
 )
 
@@ -45,8 +46,9 @@ to quickly create a Cobra application.`,
 		fmt.Printf("Creating new %s in %s\n", model.Name, model.SourceContentPath())
 
 		slug := args[0]
-
-		cobra.CheckErr(model.New(slug))
+		cfg, err := config.Load()
+		cobra.CheckErr(err)
+		cobra.CheckErr(model.New(slug+cfg.DefaultExtension, model.SourceContentPath()))
 		fmt.Printf("Your new content file is ready at %s\n", path.Join(model.SourceFilePath(slug)))
 	},
 }

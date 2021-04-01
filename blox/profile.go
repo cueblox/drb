@@ -33,6 +33,9 @@ type SocialAccount struct {
 //go:embed profile.cue
 var ProfileCue string
 
+//go:embed pat.md
+var ProfileTemplate string
+
 func ProfileFromYAML(path string) (Profile, error) {
 	err := cuego.Constrain(&Profile{}, ProfileCue)
 	if err != nil {
