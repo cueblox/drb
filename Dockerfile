@@ -1,4 +1,4 @@
-FROM alpine:3.13
+FROM ubuntu:20.04
 
 COPY drb /
 
