@@ -28,14 +28,14 @@ var Models = []Model{
 		Name:       "Article",
 		Folder:     "articles",
 		ForeignKey: "article_id",
-		Cue:        ArticleCUE,
+		Cue:        ArticleCue,
 	},
 	{
 		ID:         "category",
 		Name:       "Category",
 		Folder:     "categories",
 		ForeignKey: "category_id",
-		Cue:        CategoryCUE,
+		Cue:        CategoryCue,
 	},
 }
 

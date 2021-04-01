@@ -1,13 +1,15 @@
 package blox
 
 import (
+	_ "embed"
 	"fmt"
+	"io/ioutil"
 	"path/filepath"
 	"strings"
 
-	"cuelang.org/go/cue"
-	"cuelang.org/go/encoding/gocode/gocodec"
-	"cuelang.org/go/encoding/yaml"
+	"cuelang.org/go/cuego"
+	"github.com/devrel-blox/drb/cueutils"
+	"github.com/goccy/go-yaml"
 )
 
 type Category struct {
@@ -20,45 +22,36 @@ type Category struct {
 	ShareImage string `json:"share_image"`
 }
 
-const CategoryCUE = `title: string
-description?: string
-
-cover_image?: string
-share_image?: string
-`
+//go:embed category.cue
+var CategoryCue string
 
 func CategoryFromYAML(path string) (Category, error) {
-	var cueRuntime cue.Runtime
-	categoryInstance, err := cueRuntime.Compile("category", CategoryCUE)
-
+	err := cuego.Constrain(&Category{}, CategoryCue)
 	if err != nil {
-		return Category{}, err
+		return Category{}, cueutils.UsefulError(err)
 	}
 
-	valueInstance, err := yaml.Decode(&cueRuntime, path, nil)
+	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
-		return Category{}, fmt.Errorf("parse YAML file error: %w", err)
-	}
-
-	merged := cue.Merge(categoryInstance, valueInstance)
-	err = merged.Value().Validate()
-	if err != nil {
-		return Category{}, fmt.Errorf("validation error: %w", err)
+		return Category{}, cueutils.UsefulError(err)
 	}
 
 	var category Category
-	codec := gocodec.New(&cueRuntime, &gocodec.Config{})
 
-	err = codec.Encode(merged.Value(), &category)
-
+	err = yaml.Unmarshal(bytes, &category)
 	if err != nil {
-		return Category{}, fmt.Errorf("encoding error: %w", err)
+		return Category{}, cueutils.UsefulError(err)
 	}
+
+	err = cuego.Complete(&category)
+	if err != nil {
+		return Category{}, cueutils.UsefulError(err)
+	}
+
 	ext := filepath.Ext(path)
 	slug := strings.Replace(filepath.Base(path), ext, "", -1)
 
 	category.ID = slug
-
 	fmt.Printf("Category '%s' validated successfully\n", category.ID)
 
 	return category, nil

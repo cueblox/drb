@@ -1,6 +1,7 @@
 package blox
 
 import (
+	_ "embed"
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
