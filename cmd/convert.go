@@ -25,6 +25,7 @@ import (
 	"github.com/devrel-blox/drb/blox"
 	"github.com/devrel-blox/drb/config"
 	"github.com/devrel-blox/drb/encoding/markdown"
+	"github.com/hashicorp/go-multierror"
 	"github.com/spf13/cobra"
 )
 
@@ -42,15 +43,12 @@ to quickly create a Cobra application.`,
 
 		cfg, err := config.Load()
 		cobra.CheckErr(err)
-
-		for model, err := range convertModels(cfg) {
-			fmt.Println("A model failed to convert: ", model, " because ", err)
-		}
+		cobra.CheckErr(convertModels(cfg))
 	},
 }
 
-func convertModels(cfg *config.BloxConfig) map[string]error {
-	failedModels := make(map[string]error)
+func convertModels(cfg *config.BloxConfig) error {
+	var errors error
 
 	for _, model := range blox.Models {
 		// Attempt to decode all the YAML files with this directory as model
@@ -76,33 +74,33 @@ func convertModels(cfg *config.BloxConfig) map[string]error {
 				}
 				f, err := os.Open(path)
 				if err != nil {
-					failedModels[path] = err
+					errors = multierror.Append(errors, multierror.Prefix(err, path))
 					return nil
 				}
 				bb, err := os.ReadFile(path)
 				if err != nil {
-					failedModels[path] = err
+					errors = multierror.Append(errors, multierror.Prefix(err, path))
 					return nil
 				}
 				f.Close()
 				md, err := markdown.ToYAML(string(bb))
 				if err != nil {
-					failedModels[path] = err
+					errors = multierror.Append(errors, multierror.Prefix(err, path))
 					return nil
 				}
 				err = os.MkdirAll(model.DestinationContentPath(), 0755)
 				if err != nil {
-					failedModels[path] = err
+					errors = multierror.Append(errors, multierror.Prefix(err, path))
 					return nil
 				}
 				mdf, err := os.Create(model.DestinationFilePath(slug))
 				if err != nil {
-					failedModels[path] = err
+					errors = multierror.Append(errors, multierror.Prefix(err, path))
 					return nil
 				}
 				_, err = mdf.WriteString(md)
 				if err != nil {
-					failedModels[path] = err
+					errors = multierror.Append(errors, multierror.Prefix(err, path))
 					return nil
 				}
 				mdf.Close()
@@ -144,7 +142,7 @@ func convertModels(cfg *config.BloxConfig) map[string]error {
 			})
 	}
 
-	return failedModels
+	return errors
 }
 func init() {
 	rootCmd.AddCommand(convertCmd)

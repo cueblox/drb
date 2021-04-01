@@ -42,22 +42,25 @@ to quickly create a Cobra application.`,
 		cobra.CheckErr(err)
 
 		// convert markdown to yaml
-		for model, err := range convertModels(cfg) {
-			fmt.Println("A model failed to convert: ", model, " because ", err)
-		}
+		cobra.CheckErr(convertModels(cfg))
+
 		// validate yaml
-		for model, err := range validateModels(cfg) {
-			fmt.Println("A model failed to validate: ", model, " because ", err)
-		}
+		cobra.CheckErr(validateModels(cfg))
+
 		data, err := aggregateModels(cfg)
 		cobra.CheckErr(err)
+
 		f, err := os.Create(path.Join(cfg.Base, cfg.Destination, "data.json"))
 		cobra.CheckErr(err)
+
 		defer f.Close()
+
 		bb, err := json.Marshal(data)
 		cobra.CheckErr(err)
+
 		_, err = f.Write(bb)
 		cobra.CheckErr(err)
+
 		fmt.Printf("output data to %s\n", path.Join(cfg.Base, cfg.Destination, "data.json"))
 	},
 }

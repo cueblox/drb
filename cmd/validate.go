@@ -23,6 +23,7 @@ import (
 
 	"github.com/devrel-blox/drb/blox"
 	"github.com/devrel-blox/drb/config"
+	"github.com/hashicorp/go-multierror"
 	"github.com/spf13/cobra"
 )
 
@@ -40,15 +41,12 @@ to quickly create a Cobra application.`,
 		cfg, err := config.Load()
 		cobra.CheckErr(err)
 
-		for model, err := range validateModels(cfg) {
-			fmt.Println("A model failed to validate: ", model, " because ", err)
-		}
-
+		cobra.CheckErr(validateModels(cfg))
 	},
 }
 
-func validateModels(cfg *config.BloxConfig) map[string]error {
-	failedModels := make(map[string]error)
+func validateModels(cfg *config.BloxConfig) error {
+	var errors error
 
 	// We want to validate all the YAML for the models that we're aware of.
 	for _, model := range blox.Models {
@@ -79,7 +77,7 @@ func validateModels(cfg *config.BloxConfig) map[string]error {
 					{
 						_, err := blox.ProfileFromYAML(path)
 						if err != nil {
-							failedModels[path] = err
+							errors = multierror.Append(errors, multierror.Prefix(err, path))
 							return nil
 						}
 
@@ -89,7 +87,7 @@ func validateModels(cfg *config.BloxConfig) map[string]error {
 						_, err := blox.ArticleFromYAML(path)
 
 						if err != nil {
-							failedModels[path] = err
+							errors = multierror.Append(errors, multierror.Prefix(err, path))
 							return nil
 						}
 					}
@@ -98,7 +96,7 @@ func validateModels(cfg *config.BloxConfig) map[string]error {
 						_, err := blox.CategoryFromYAML(path)
 
 						if err != nil {
-							failedModels[path] = err
+							errors = multierror.Append(errors, multierror.Prefix(err, path))
 							return nil
 						}
 					}
@@ -109,7 +107,7 @@ func validateModels(cfg *config.BloxConfig) map[string]error {
 			})
 	}
 
-	return failedModels
+	return errors
 }
 
 func init() {
