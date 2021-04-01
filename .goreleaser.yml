@@ -18,19 +18,19 @@ builds:
 dockers:
   - image_templates:
       - "ghcr.io/devrel-blox/drb:{{ .Tag }}-amd64"
-    binaries:
+    ids:
       - drb
     use_buildx: true
     build_flag_templates:
       - --platform=linux/amd64
   - image_templates:
       - "ghcr.io/devrel-blox/drb:{{ .Tag }}-arm64"
-    binaries:
+    ids:
       - drb
     use_buildx: true
     build_flag_templates:
       - --platform=linux/arm64
-      -
+
 docker_manifests:
   - name_template: "ghcr.io/devrel-blox/drb:latest"
     image_templates:
