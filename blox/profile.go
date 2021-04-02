@@ -24,12 +24,12 @@ var ProfileCue string
 //go:embed pat.md
 var ProfileTemplate string
 
-func ProfileFromYAML(path string) (map[string]interface{}, error) {
+func ProfileFromYAML(path string, schema string) (map[string]interface{}, error) {
 	empty := make(map[string]interface{})
 
 	var profile map[string]interface{}
 
-	err := cuego.Constrain(&profile, ProfileCue)
+	err := cuego.Constrain(&profile, schema)
 	if err != nil {
 		return empty, cueutils.UsefulError(err)
 	}

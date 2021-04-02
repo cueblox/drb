@@ -75,7 +75,15 @@ func validateModels(cfg *config.BloxConfig) error {
 				switch model.ID {
 				case "profile":
 					{
-						_, err := blox.ProfileFromYAML(path)
+						// Check for Replace
+						profileSchema := blox.ProfileCue
+						if replace, ok := cfg.SchemaOverrides.Replace["profile"]; ok {
+							profileSchema = replace
+						}
+						// Check for Extend
+						// No access to Merge through cuego. Merge through other APIs
+						// is deprecated. Need to investigate
+						_, err := blox.ProfileFromYAML(path, profileSchema)
 						if err != nil {
 							errors = multierror.Append(errors, multierror.Prefix(err, path))
 							return nil

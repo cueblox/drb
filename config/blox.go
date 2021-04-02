@@ -10,12 +10,17 @@ import (
 )
 
 type BloxConfig struct {
-	Base             string `json:"base"`
-	Source           string `json:"source"`
-	Destination      string `json:"destination"`
-	Templates        string `json:"templates"`
-	Static           string `json:"static"`
-	DefaultExtension string `json:"default_extension"`
+	Base             string         `json:"base"`
+	Source           string         `json:"source"`
+	Destination      string         `json:"destination"`
+	Templates        string         `json:"templates"`
+	Static           string         `json:"static"`
+	DefaultExtension string         `json:"default_extension"`
+	SchemaOverrides  SchemaOverride `json:"schema"`
+}
+type SchemaOverride struct {
+	Extend  map[string]string `json:"extend"`
+	Replace map[string]string `json:"replace"`
 }
 
 func (b *BloxConfig) Write(w io.Writer) error {
