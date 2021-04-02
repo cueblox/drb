@@ -46,12 +46,7 @@ func (p *VercelProvider) Install() error {
 	if err != nil {
 		return err
 	}
-	// create data.js in api directory
-	data := path.Join(api, "data.js")
-	err = hosting.CreateFileWithContents(data, datajs)
-	if err != nil {
-		return err
-	}
+
 	// create package.json
 	pkg := path.Join(root, "package.json")
 	err = hosting.CreateFileWithContents(pkg, packagejson)

@@ -9,6 +9,7 @@
     "glob": "^7.1.6",
     "js-yaml": "^4.0.0",
     "json-graphql-server": "^2.2.0",
-    "markdown-to-json": "^0.5.4"
+    "markdown-to-json": "^0.5.4",
+    "sync-fetch": "^0.3.0"
   }
 }
