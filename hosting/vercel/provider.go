@@ -65,9 +65,6 @@ func (p *VercelProvider) Install() error {
 	return nil
 }
 
-//go:embed data.js
-var datajs string
-
 //go:embed index.js
 var indexjs string
 
