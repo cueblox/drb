@@ -1,9 +1,6 @@
 {
     "functions": {
         "api/index.js": {
-            "includeFiles": "output/**"
-        },
-        "api/data.js": {
             "includeFiles": "content/**"
         }
     },
