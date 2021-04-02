@@ -1,0 +1,16 @@
+{
+  "name": "cms",
+  "version": "0.0.1",
+  "description": "cms stuff",
+  "main": "index.js",
+  "scripts": {
+    "vercel-build": "node scripts/convert.js"
+  },
+  "author": "Brian Ketelsen <bketelsen@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "glob": "^7.1.6",
+    "json-graphql-server": "^2.2.0",
+    "markdown-to-json": "^0.5.4"
+  }
+}
