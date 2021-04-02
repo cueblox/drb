@@ -40,7 +40,6 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cfg, err := config.Load()
 		cobra.CheckErr(err)
-
 		cobra.CheckErr(validateModels(cfg))
 	},
 }
@@ -57,11 +56,11 @@ func validateModels(cfg *config.BloxConfig) error {
 			func(path string, info os.FileInfo, err error) error {
 				if err != nil {
 					// Squash, we've not even validated that it's a supported ext
-					return nil
+					return err
 				}
 
 				if info.IsDir() {
-					return nil
+					return err
 				}
 
 				ext := filepath.Ext(path)
@@ -69,40 +68,21 @@ func validateModels(cfg *config.BloxConfig) error {
 				// if ext != cfg.DefaultExtension {
 				// Should be SupportedExtensions?
 				if ext != ".yaml" && ext != ".yml" {
-					return nil
+					return err
 				}
 
-				switch model.ID {
-				case "profile":
-					{
-						_, err := blox.ProfileFromYAML(path)
-						if err != nil {
-							errors = multierror.Append(errors, multierror.Prefix(err, path))
-							return nil
-						}
-
-					}
-				case "article":
-					{
-						_, err := blox.ArticleFromYAML(path)
-
-						if err != nil {
-							errors = multierror.Append(errors, multierror.Prefix(err, path))
-							return nil
-						}
-					}
-				case "category":
-					{
-						_, err := blox.CategoryFromYAML(path)
-
-						if err != nil {
-							errors = multierror.Append(errors, multierror.Prefix(err, path))
-							return nil
-						}
-					}
+				cueSchema := model.Cue
+				if replace, ok := cfg.SchemaOverrides.Replace[model.ID]; ok {
+					cueSchema = replace
 				}
 
-				return nil
+				_, err = blox.FromYAML(path, model.ID, cueSchema)
+				if err != nil {
+					errors = multierror.Append(errors, multierror.Prefix(err, path))
+					return err
+				}
+
+				return err
 
 			})
 	}

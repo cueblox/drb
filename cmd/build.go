@@ -65,8 +65,9 @@ to quickly create a Cobra application.`,
 	},
 }
 
-func aggregateModels(cfg *config.BloxConfig) (Data, error) {
-	data := NewData()
+func aggregateModels(cfg *config.BloxConfig) (map[string][]interface{}, error) {
+	data := make(map[string][]interface{})
+
 	for _, model := range blox.Models {
 		// Attempt to decode all the YAML files with this directory as model
 		fmt.Printf("Loading %s YAML files in %s\n", model.ID, path.Join(cfg.Base, cfg.Destination, model.Folder))
@@ -89,32 +90,17 @@ func aggregateModels(cfg *config.BloxConfig) (Data, error) {
 				if ext != ".yaml" && ext != ".yml" {
 					return nil
 				}
-				switch model.ID {
-				case "profile":
-					{
-						profile, err := blox.ProfileFromYAML(path)
-						if err != nil {
-							return err
-						}
-						data.Profiles = append(data.Profiles, profile)
-					}
-				case "article":
-					{
-						article, err := blox.ArticleFromYAML(path)
-						if err != nil {
-							return err
-						}
-						data.Articles = append(data.Articles, article)
-					}
-				case "category":
-					{
-						category, err := blox.CategoryFromYAML(path)
-						if err != nil {
-							return err
-						}
-						data.Categories = append(data.Categories, category)
-					}
+
+				cueSchema := model.Cue
+				if replace, ok := cfg.SchemaOverrides.Replace[model.ID]; ok {
+					cueSchema = replace
 				}
+
+				entity, err := blox.FromYAML(path, model.ID, cueSchema)
+				if err != nil {
+					return err
+				}
+				data[model.ID] = append(data[model.ID], entity)
 
 				return nil
 
