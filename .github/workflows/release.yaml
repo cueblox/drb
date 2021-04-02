@@ -39,3 +39,4 @@ jobs:
           args: release --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAP_WRITE_KEY: ${{ secrets.TAP_WRITE_KEY }}

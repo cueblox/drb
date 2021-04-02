@@ -41,3 +41,19 @@ docker_manifests:
     image_templates:
       - "ghcr.io/devrel-blox/drb:{{ .Tag }}-amd64"
       - "ghcr.io/devrel-blox/drb:{{ .Tag }}-arm64"
+
+brews:
+  - name: drb
+    tap:
+      owner: devrel-blox
+      name: homebrew-tap
+      token: "{{ .Env.TAP_WRITE_KEY }}"
+    folder: formula
+
+    commit_author:
+      name: DevRel Blox
+      email: support@devrel-blox.com
+
+    homepage: "https://github.com/devrel-blox/"
+    description: "DevRel Blox"
+    license: "MIT"
