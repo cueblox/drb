@@ -1,31 +1,33 @@
 const fs = require('fs');
 const path = require('path');
+const yaml = require('js-yaml');
 
-const outputroot = path.join(__dirname, "../.", "output");
 
-const content_types = ["articles", "categories", "pages", "profiles", "sites"]
+var destination = "";
+var base = "";
+
+try {
+    var filename = path.join(__dirname, '../.', 'blox.yaml'),
+        contents = fs.readFileSync(filename, 'utf8'),
+        config = yaml.load(contents);
+
+
+    destination = config.destination;
+    base = config.base;
+} catch (err) {
+    console.log(err.stack || String(err));
+}
+
+
+
+const datafile = path.join(__dirname, '../.', base, destination, "data.json");
+
 
 var data = {}
 
-content_types.forEach((ct) => {
-
-    const files = fs.readdirSync(path.join(outputroot, ct));
-    const acc = [];
-    files.forEach((curr) => {
-        if (curr.includes('.json')) {
-            const file = JSON.parse(fs.readFileSync(path.join(outputroot, ct, curr), 'utf8'));
-            const extension = path.extname(curr);
-            const slug = path.basename(curr, extension);
-            // remove wrapping key
-            var stripped = file[slug];
-            // add id property
-            stripped.id = stripped.basename;
-            acc.push(stripped);
-        }
-
-    }, {});
-    data[ct] = acc;
+const file = JSON.parse(fs.readFileSync(datafile, 'utf8'));
+console.log(file)
+data = file;
 
 
-}, {})
 module.exports = data;
