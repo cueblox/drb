@@ -33,6 +33,8 @@ var ProfileTemplate string
 func FromYAML(path string, modelName string, cue string) (map[string]interface{}, error) {
 	var model = make(map[string]interface{})
 
+	cuego.DefaultContext = &cuego.Context{}
+
 	err := cuego.Constrain(&model, cue)
 	if err != nil {
 		return nil, cueutils.UsefulError(err)
