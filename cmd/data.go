@@ -5,13 +5,13 @@ import (
 )
 
 type Data struct {
-	Profiles   []blox.Profile  `json:"profiles"`
-	Articles   []blox.Article  `json:"articles"`
-	Categories []blox.Category `json:"categories"`
+	Profiles   []map[string]interface{} `json:"profiles"`
+	Articles   []blox.Article           `json:"articles"`
+	Categories []blox.Category          `json:"categories"`
 }
 
 func NewData() Data {
-	var profiles []blox.Profile
+	var profiles []map[string]interface{}
 	var articles []blox.Article
 	var categories []blox.Category
 	return Data{

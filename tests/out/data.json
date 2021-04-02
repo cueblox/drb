@@ -1,1 +1,1 @@
-{"profiles":[{"ID":"rawkode","body":"","body_raw":"","first_name":"David","last_name":"LastName","company":"Company","title":"Title","social_accounts":[{"network":"twitter","username":"username","url":""}]}],"articles":null,"categories":null}
+{"profiles":[{"ID":"rawkode","body_raw":"\nBody\n","company":"Company","first_name":"David","last_name":"LastName","social_accounts":[{"network":"twitter","url":"","username":"username"}],"title":"Title"}],"articles":null,"categories":null}

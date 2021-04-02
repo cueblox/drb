@@ -12,18 +12,6 @@ import (
 	"github.com/goccy/go-yaml"
 )
 
-type Profile struct {
-	BaseModel `json:",omitempty"`
-
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-
-	Company string `json:"company"`
-	Title   string `json:"title"`
-
-	SocialAccounts []SocialAccount `json:"social_accounts,omitempty"`
-}
-
 type SocialAccount struct {
 	Network  string `json:"network"`
 	Username string `json:"username"`
@@ -36,34 +24,36 @@ var ProfileCue string
 //go:embed pat.md
 var ProfileTemplate string
 
-func ProfileFromYAML(path string) (Profile, error) {
-	err := cuego.Constrain(&Profile{}, ProfileCue)
+func ProfileFromYAML(path string) (map[string]interface{}, error) {
+	empty := make(map[string]interface{})
+
+	var profile map[string]interface{}
+
+	err := cuego.Constrain(&profile, ProfileCue)
 	if err != nil {
-		return Profile{}, cueutils.UsefulError(err)
+		return empty, cueutils.UsefulError(err)
 	}
 
 	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
-		return Profile{}, cueutils.UsefulError(err)
+		return empty, cueutils.UsefulError(err)
 	}
-
-	var profile Profile
 
 	err = yaml.Unmarshal(bytes, &profile)
 	if err != nil {
-		return Profile{}, cueutils.UsefulError(err)
+		return empty, cueutils.UsefulError(err)
 	}
 
 	err = cuego.Complete(&profile)
 	if err != nil {
-		return Profile{}, cueutils.UsefulError(err)
+		return empty, cueutils.UsefulError(err)
 	}
 
 	ext := filepath.Ext(path)
 	slug := strings.Replace(filepath.Base(path), ext, "", -1)
 
-	profile.ID = slug
-	fmt.Printf("Profile '%s' validated successfully\n", profile.ID)
+	profile["ID"] = slug
+	fmt.Printf("Profile '%s' validated successfully\n", profile["ID"])
 
 	return profile, nil
 }
