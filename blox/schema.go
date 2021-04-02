@@ -58,8 +58,8 @@ func FromYAML(path string, modelName string, cue string) (map[string]interface{}
 	ext := filepath.Ext(path)
 	slug := strings.Replace(filepath.Base(path), ext, "", -1)
 
-	model["ID"] = slug
-	fmt.Printf("Model %s '%s' validated successfully\n", modelName, model["ID"])
+	model["id"] = slug
+	fmt.Printf("Model %s '%s' validated successfully\n", modelName, model["id"])
 
 	return model, nil
 }

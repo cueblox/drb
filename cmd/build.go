@@ -100,7 +100,7 @@ func aggregateModels(cfg *config.BloxConfig) (map[string][]interface{}, error) {
 				if err != nil {
 					return err
 				}
-				data[model.ID] = append(data[model.ID], entity)
+				data[model.Folder] = append(data[model.ID], entity)
 
 				return nil
 
