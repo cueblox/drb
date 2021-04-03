@@ -1,6 +1,6 @@
 {
 	title:        string
-	draft?:       bool
+	draft?:       bool | *false
 	body_raw?:    string
 	body?:        string
 	id?:          string
