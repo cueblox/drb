@@ -30,6 +30,12 @@ var ProfileCue string
 //go:embed profile.md
 var ProfileTemplate string
 
+//go:embed page.cue
+var PageCue string
+
+//go:embed page.md
+var PageTemplate string
+
 func FromYAML(path string, modelName string, cue string) (map[string]interface{}, error) {
 	var model = make(map[string]interface{})
 

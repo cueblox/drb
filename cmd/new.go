@@ -56,7 +56,7 @@ to quickly create a Cobra application.`,
 func init() {
 	rootCmd.AddCommand(newCmd)
 
-	newCmd.Flags().StringVarP(&model, "type", "t", "profile", "type of content to create")
+	newCmd.Flags().StringVarP(&model, "type", "t", "article", "type of content to create")
 	cobra.CheckErr(newCmd.MarkFlagRequired("type"))
 	newCmd.SetUsageTemplate("drb new --type [type name] [slug]")
 }
