@@ -36,6 +36,13 @@ var Models = []Model{
 		ForeignKey: "category_id",
 		Cue:        CategoryCue,
 	},
+	{
+		ID:         "page",
+		Name:       "Page",
+		Folder:     "pages",
+		ForeignKey: "page_id",
+		Cue:        PageCue,
+	},
 }
 
 type Model struct {
@@ -117,7 +124,8 @@ func (m Model) New(slug string, destination string) error {
 		f.Write([]byte(CategoryTemplate))
 	case "profile":
 		f.Write([]byte(ProfileTemplate))
-
+	case "page":
+		f.Write([]byte(PageTemplate))
 	default:
 		return fmt.Errorf("generator doesn't support %s yet", m.ID)
 	}
