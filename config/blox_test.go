@@ -52,7 +52,7 @@ var drb_profile_v1 = Model{
 	}`,
 }
 var blox_conf = BloxConfig{
-	Base:             "content",
+	Base:             "testdata",
 	Source:           "source",
 	Destination:      "out",
 	Templates:        "templates",

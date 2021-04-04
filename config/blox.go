@@ -72,6 +72,8 @@ func (s *Schema) Save() error {
 	if err != nil {
 		return err
 	}
+
+	// save the schema file
 	schemaPath := path.Join(cfg.Base, cfg.Schemas)
 	schemaFile := path.Join(schemaPath, s.Name+".json")
 	err = os.MkdirAll(schemaPath, 0755)
@@ -79,7 +81,28 @@ func (s *Schema) Save() error {
 		return err
 	}
 	bb, err := json.Marshal(s)
-	return os.WriteFile(schemaFile, bb, 0755)
+	err = os.WriteFile(schemaFile, bb, 0755)
+	if err != nil {
+		return err
+	}
+	schemaDir := path.Join(schemaPath, s.Name)
+	err = os.MkdirAll(schemaDir, 0755)
+	if err != nil {
+		return err
+	}
+	for _, m := range s.Models {
+		schemaFilePath := path.Join(schemaDir, m.Name+".json")
+		bb, err := json.Marshal(m)
+		if err != nil {
+			return err
+		}
+		err = os.WriteFile(schemaFilePath, bb, 0755)
+		if err != nil {
+			return err
+		}
+	}
+
+	return err
 }
 
 type Model struct {
