@@ -2,7 +2,6 @@ package blox
 
 import (
 	_ "embed"
-	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
@@ -65,7 +64,6 @@ func FromYAML(path string, modelName string, cue string) (map[string]interface{}
 	slug := strings.Replace(filepath.Base(path), ext, "", -1)
 
 	model["id"] = slug
-	fmt.Printf("Model %s '%s' validated successfully\n", modelName, model["id"])
 
 	return model, nil
 }

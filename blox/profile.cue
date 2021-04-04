@@ -1,5 +1,5 @@
 {
-	first_name: "David" | "Brian"
+	first_name: string
 	last_name:  string
 	age?:       int
 	company?:   string

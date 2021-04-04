@@ -20,6 +20,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 
 	"github.com/devrel-blox/drb/blox"
 	"github.com/devrel-blox/drb/config"
@@ -46,11 +47,13 @@ to quickly create a Cobra application.`,
 
 func validateModels(cfg *config.BloxConfig) error {
 	var errors error
+	fmt.Printf("Validating YAML files...\n")
 
 	// We want to validate all the YAML for the models that we're aware of.
 	for _, model := range blox.Models {
 		// Attempt to decode all the YAML files with this directory as model
-		fmt.Printf("Validating %s YAML files in %s\n", model.ID, path.Join(cfg.Base, cfg.Destination, model.Folder))
+
+		fmt.Printf("\t model: %s\n\t\t in: %s\n", model.ID, path.Join(cfg.Base, cfg.Destination, model.Folder))
 
 		filepath.Walk(path.Join(cfg.Base, cfg.Destination, model.Folder),
 			func(path string, info os.FileInfo, err error) error {
@@ -64,7 +67,7 @@ func validateModels(cfg *config.BloxConfig) error {
 				}
 
 				ext := filepath.Ext(path)
-
+				slug := strings.Replace(filepath.Base(path), ext, "", -1)
 				// if ext != cfg.DefaultExtension {
 				// Should be SupportedExtensions?
 				if ext != ".yaml" && ext != ".yml" {
@@ -81,6 +84,7 @@ func validateModels(cfg *config.BloxConfig) error {
 					errors = multierror.Append(errors, multierror.Prefix(err, path))
 					return err
 				}
+				fmt.Printf("\t\t\t%s '%s' validated\n", model.ID, slug)
 
 				return err
 
