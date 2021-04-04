@@ -78,6 +78,7 @@ each content type with pre-filled values.
 			cobra.CheckErr(err)
 			cobra.CheckErr(model.New(model.ID+cfg.DefaultExtension, model.TemplatePath()))
 		}
+		pterm.Info.Println("Initialized folder structures.")
 
 	},
 }
