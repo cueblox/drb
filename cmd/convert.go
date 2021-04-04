@@ -49,10 +49,11 @@ to quickly create a Cobra application.`,
 
 func convertModels(cfg *config.BloxConfig) error {
 	var errors error
+	fmt.Printf("Reading Markdown files...\n")
 
 	for _, model := range blox.Models {
 		// Attempt to decode all the YAML files with this directory as model
-		fmt.Printf("Checking for %s markdown files in %s\n", model.ID, path.Join(cfg.Base, cfg.Source, model.Folder))
+		fmt.Printf("\tmodel: %s \n\t\tsource: %s\n", model.Name, path.Join(cfg.Base, cfg.Source, model.Folder))
 
 		filepath.Walk(path.Join(cfg.Base, cfg.Source, model.Folder),
 			func(path string, info os.FileInfo, err error) error {
@@ -112,7 +113,7 @@ func convertModels(cfg *config.BloxConfig) error {
 
 				*/
 
-				fmt.Println(fmt.Sprintf("Markdown file '%s' converted", slug))
+				fmt.Printf("\t\t\t%s '%s' converted\n", model.ID, slug)
 
 				return nil
 

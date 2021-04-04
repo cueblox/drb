@@ -110,27 +110,53 @@ func (m Model) New(slug string, destination string) error {
 	if err != nil {
 		return err
 	}
+
+	// check for user installed templates first
+	cfg, err := config.Load()
+	cobra.CheckErr(err)
+
+	templatePath := path.Join(cfg.Base, cfg.Templates, m.Folder, m.ID+cfg.DefaultExtension)
+
 	joined := path.Join(destination, slug)
+	// check to see if we're creating the templates
+	// from the `init` command
+	fmt.Println("creating:", joined)
+	fmt.Println("template path:", templatePath)
+	var bb []byte
+	if templatePath == joined {
+		bb, err = m.defaultTemplate()
+		cobra.CheckErr(err)
+	} else {
+		bb, err = os.ReadFile(templatePath)
+		cobra.CheckErr(err)
+	}
+
+	// create the destination file
 	f, err := os.Create(joined)
 	if err != nil {
 		return err
 	}
 	defer f.Close()
 
-	switch m.ID {
-	case "article":
-		f.Write([]byte(ArticleTemplate))
-	case "category":
-		f.Write([]byte(CategoryTemplate))
-	case "profile":
-		f.Write([]byte(ProfileTemplate))
-	case "page":
-		f.Write([]byte(PageTemplate))
-	default:
-		return fmt.Errorf("generator doesn't support %s yet", m.ID)
-	}
+	f.Write(bb)
 
 	return nil
+}
+
+func (m Model) defaultTemplate() ([]byte, error) {
+
+	switch m.ID {
+	case "article":
+		return []byte(ArticleTemplate), nil
+	case "category":
+		return []byte(CategoryTemplate), nil
+	case "profile":
+		return []byte(ProfileTemplate), nil
+	case "page":
+		return []byte(PageTemplate), nil
+	default:
+		return []byte{}, fmt.Errorf("generator doesn't support %s yet", m.ID)
+	}
 }
 
 // baseModel defines fields used by all drb

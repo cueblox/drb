@@ -21,6 +21,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 
 	"github.com/devrel-blox/drb/blox"
 	"github.com/devrel-blox/drb/config"
@@ -40,6 +41,7 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cfg, err := config.Load()
 		cobra.CheckErr(err)
+		fmt.Println("Preparing data output...")
 
 		// convert markdown to yaml
 		cobra.CheckErr(convertModels(cfg))
@@ -61,16 +63,17 @@ to quickly create a Cobra application.`,
 		_, err = f.Write(bb)
 		cobra.CheckErr(err)
 
-		fmt.Printf("output data to %s\n", path.Join(cfg.Base, cfg.Destination, "data.json"))
+		fmt.Printf("wrote: %s\n", path.Join(cfg.Base, cfg.Destination, "data.json"))
 	},
 }
 
 func aggregateModels(cfg *config.BloxConfig) (map[string][]interface{}, error) {
 	data := make(map[string][]interface{})
+	fmt.Printf("Loading YAML files...\n")
 
 	for _, model := range blox.Models {
 		// Attempt to decode all the YAML files with this directory as model
-		fmt.Printf("Loading %s YAML files in %s\n", model.ID, path.Join(cfg.Base, cfg.Destination, model.Folder))
+		fmt.Printf("\t model %s: \n\t\tsource: %s\n", model.ID, path.Join(cfg.Base, cfg.Destination, model.Folder))
 
 		filepath.Walk(path.Join(cfg.Base, cfg.Destination, model.Folder),
 			func(path string, info os.FileInfo, err error) error {
@@ -84,6 +87,7 @@ func aggregateModels(cfg *config.BloxConfig) (map[string][]interface{}, error) {
 				}
 
 				ext := filepath.Ext(path)
+				slug := strings.Replace(filepath.Base(path), ext, "", -1)
 
 				// if ext != cfg.DefaultExtension {
 				// Should be SupportedExtensions?
@@ -101,6 +105,7 @@ func aggregateModels(cfg *config.BloxConfig) (map[string][]interface{}, error) {
 					return err
 				}
 				data[model.Folder] = append(data[model.ID], entity)
+				fmt.Printf("\t\t\t%s '%s' loaded\n", model.ID, slug)
 
 				return nil
 
