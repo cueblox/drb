@@ -48,9 +48,6 @@ var cmdInstall = &cobra.Command{
 	Long:  `Install hosting support for a provider`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		if quiet {
-			pterm.DisableOutput()
-		}
 		p := hosting.GetProvider(provider)
 		if p == nil {
 			err := errors.New("unknown provider")

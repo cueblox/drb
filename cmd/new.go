@@ -25,9 +25,6 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		if quiet {
-			pterm.DisableOutput()
-		}
 		model, err := blox.GetModel(model)
 		cobra.CheckErr(err)
 

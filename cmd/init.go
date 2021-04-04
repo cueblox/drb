@@ -41,9 +41,6 @@ The "template" directory is where you can store templates for
 each content type with pre-filled values.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		if quiet {
-			pterm.DisableOutput()
-		}
 		root, err := os.Getwd()
 		if err != nil {
 			cmd.PrintErr("unable to get current directory")
