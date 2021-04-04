@@ -1,0 +1,8 @@
+base: testdata
+source: source
+destination: out
+templates: templates
+static: static
+schemas: schemas
+default_extension: .md
+remote_schemas: []

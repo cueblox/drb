@@ -20,11 +20,9 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"strings"
 
 	"github.com/devrel-blox/drb/blox"
 	"github.com/devrel-blox/drb/config"
-	"github.com/hashicorp/go-multierror"
 	"github.com/spf13/cobra"
 )
 
@@ -67,14 +65,14 @@ func validateModels(cfg *config.BloxConfig) error {
 				}
 
 				ext := filepath.Ext(path)
-				slug := strings.Replace(filepath.Base(path), ext, "", -1)
+				//	slug := strings.Replace(filepath.Base(path), ext, "", -1)
 				// if ext != cfg.DefaultExtension {
 				// Should be SupportedExtensions?
 				if ext != ".yaml" && ext != ".yml" {
 					return err
 				}
 
-				cueSchema := model.Cue
+				/*cueSchema := model.Cue
 				if replace, ok := cfg.SchemaOverrides.Replace[model.ID]; ok {
 					cueSchema = replace
 				}
@@ -85,7 +83,7 @@ func validateModels(cfg *config.BloxConfig) error {
 					return err
 				}
 				fmt.Printf("\t\t\t%s '%s' validated\n", model.ID, slug)
-
+				*/
 				return err
 
 			})

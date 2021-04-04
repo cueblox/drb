@@ -21,7 +21,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"strings"
 
 	"github.com/devrel-blox/drb/blox"
 	"github.com/devrel-blox/drb/config"
@@ -87,7 +86,7 @@ func aggregateModels(cfg *config.BloxConfig) (map[string][]interface{}, error) {
 				}
 
 				ext := filepath.Ext(path)
-				slug := strings.Replace(filepath.Base(path), ext, "", -1)
+				//	slug := strings.Replace(filepath.Base(path), ext, "", -1)
 
 				// if ext != cfg.DefaultExtension {
 				// Should be SupportedExtensions?
@@ -95,18 +94,19 @@ func aggregateModels(cfg *config.BloxConfig) (map[string][]interface{}, error) {
 					return nil
 				}
 
-				cueSchema := model.Cue
-				if replace, ok := cfg.SchemaOverrides.Replace[model.ID]; ok {
-					cueSchema = replace
-				}
+				/*		cueSchema := model.Cue
+										if replace, ok := cfg.SchemaOverrides.Replace[model.ID]; ok {
+											cueSchema = replace
+										}
 
-				entity, err := blox.FromYAML(path, model.ID, cueSchema)
-				if err != nil {
-					return err
-				}
-				data[model.Folder] = append(data[model.ID], entity)
-				fmt.Printf("\t\t\t%s '%s' loaded\n", model.ID, slug)
+								entity, err := blox.FromYAML(path, model.ID, cueSchema)
+								if err != nil {
+									return err
+								}
 
+						data[model.Folder] = append(data[model.ID], entity)
+						fmt.Printf("\t\t\t%s '%s' loaded\n", model.ID, slug)
+				*/
 				return nil
 
 			})

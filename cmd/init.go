@@ -86,6 +86,7 @@ func writeConfigFile() error {
 		Templates:        templates,
 		Destination:      destination,
 		Static:           static,
+		Schemas:          "schemas",
 		DefaultExtension: extension,
 	}
 	f, err := os.Create("blox.yaml")
@@ -110,6 +111,10 @@ func createDirectories(root string) error {
 	if err != nil {
 		return errors.New("creating template directory")
 	}
+	err = os.MkdirAll(schemaDir(root), 0755)
+	if err != nil {
+		return errors.New("creating schema directory")
+	}
 
 	err = os.MkdirAll(staticDir(root), 0755)
 	if err != nil {
@@ -132,6 +137,9 @@ func staticDir(root string) string {
 	return path.Join(root, base, static)
 }
 
+func schemaDir(root string) string {
+	return path.Join(root, base, "schemas")
+}
 func init() {
 	rootCmd.AddCommand(initCmd)
 
