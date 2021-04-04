@@ -3,7 +3,7 @@ module github.com/devrel-blox/drb
 go 1.16
 
 require (
-	cuelang.org/go v0.3.0-beta.7
+	cuelang.org/go v0.3.0
 	github.com/Masterminds/semver v1.5.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
