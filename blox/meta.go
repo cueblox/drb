@@ -120,8 +120,6 @@ func (m Model) New(slug string, destination string) error {
 	joined := path.Join(destination, slug)
 	// check to see if we're creating the templates
 	// from the `init` command
-	fmt.Println("creating:", joined)
-	fmt.Println("template path:", templatePath)
 	var bb []byte
 	if templatePath == joined {
 		bb, err = m.defaultTemplate()

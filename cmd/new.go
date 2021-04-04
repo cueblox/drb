@@ -16,11 +16,11 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	"path"
 
 	"github.com/devrel-blox/drb/blox"
 	"github.com/devrel-blox/drb/config"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -40,16 +40,19 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		if quiet {
+			pterm.DisableOutput()
+		}
 		model, err := blox.GetModel(model)
 		cobra.CheckErr(err)
 
-		fmt.Printf("Creating new %s in %s\n", model.Name, model.SourceContentPath())
+		pterm.Info.Printf("Creating new %s in %s\n", model.Name, model.SourceContentPath())
 
 		slug := args[0]
 		cfg, err := config.Load()
 		cobra.CheckErr(err)
 		cobra.CheckErr(model.New(slug+cfg.DefaultExtension, model.SourceContentPath()))
-		fmt.Printf("Your new content file is ready at %s\n", path.Join(model.SourceFilePath(slug)))
+		pterm.Info.Printf("Your new content file is ready at %s\n", path.Join(model.SourceFilePath(slug)))
 	},
 }
 

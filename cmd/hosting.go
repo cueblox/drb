@@ -23,6 +23,7 @@ import (
 	_ "github.com/devrel-blox/drb/hosting/azure"
 	_ "github.com/devrel-blox/drb/hosting/netlify"
 	_ "github.com/devrel-blox/drb/hosting/vercel"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -42,7 +43,6 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		fmt.Println("hosting called")
 	},
 }
 var cmdList = &cobra.Command{
@@ -63,12 +63,15 @@ var cmdInstall = &cobra.Command{
 	Long:  `Install hosting support for a provider`,
 
 	Run: func(cmd *cobra.Command, args []string) {
+		if quiet {
+			pterm.DisableOutput()
+		}
 		p := hosting.GetProvider(provider)
 		if p == nil {
 			err := errors.New("unknown provider")
 			cobra.CheckErr(err)
 		}
-		fmt.Println("Installing support for", p.Name())
+		pterm.Info.Printf("Installing support for %s\n", p.Name())
 		p.Install()
 	},
 }

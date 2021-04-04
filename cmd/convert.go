@@ -16,7 +16,6 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	"os"
 	"path"
 	"path/filepath"
@@ -26,6 +25,7 @@ import (
 	"github.com/devrel-blox/drb/config"
 	"github.com/devrel-blox/drb/encoding/markdown"
 	"github.com/hashicorp/go-multierror"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -40,7 +40,9 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-
+		if quiet {
+			pterm.DisableOutput()
+		}
 		cfg, err := config.Load()
 		cobra.CheckErr(err)
 		cobra.CheckErr(convertModels(cfg))
@@ -49,11 +51,10 @@ to quickly create a Cobra application.`,
 
 func convertModels(cfg *config.BloxConfig) error {
 	var errors error
-	fmt.Printf("Reading Markdown files...\n")
+	pterm.Info.Println("Converting Markdown files...")
 
 	for _, model := range blox.Models {
 		// Attempt to decode all the YAML files with this directory as model
-		fmt.Printf("\tmodel: %s \n\t\tsource: %s\n", model.Name, path.Join(cfg.Base, cfg.Source, model.Folder))
 
 		filepath.Walk(path.Join(cfg.Base, cfg.Source, model.Folder),
 			func(path string, info os.FileInfo, err error) error {
@@ -113,8 +114,6 @@ func convertModels(cfg *config.BloxConfig) error {
 
 				*/
 
-				fmt.Printf("\t\t\t%s '%s' converted\n", model.ID, slug)
-
 				return nil
 
 				// modelYaml, err := ioutil.ReadFile(path)
@@ -142,7 +141,12 @@ func convertModels(cfg *config.BloxConfig) error {
 				return nil
 			})
 	}
+	if errors != nil {
 
+		pterm.Error.Println("Conversions failed")
+	} else {
+		pterm.Success.Println("Conversions complete")
+	}
 	return errors
 }
 func init() {
