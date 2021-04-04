@@ -2,14 +2,14 @@ package cmd
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 	"path"
 	"path/filepath"
-	"strings"
 
 	"github.com/devrel-blox/drb/blox"
 	"github.com/devrel-blox/drb/config"
+	"github.com/hashicorp/go-multierror"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -26,7 +26,6 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cfg, err := config.Load()
 		cobra.CheckErr(err)
-		fmt.Println("Preparing data output...")
 
 		// convert markdown to yaml
 		cobra.CheckErr(convertModels(cfg))
@@ -46,19 +45,21 @@ to quickly create a Cobra application.`,
 		cobra.CheckErr(err)
 
 		_, err = f.Write(bb)
-		cobra.CheckErr(err)
 
-		fmt.Printf("wrote: %s\n", path.Join(cfg.Base, cfg.Destination, "data.json"))
+		cobra.CheckErr(err)
+		pterm.Info.Printf("wrote: %s\n", path.Join(cfg.Base, cfg.Destination, "data.json"))
+
 	},
 }
 
 func aggregateModels(cfg *config.BloxConfig) (map[string][]interface{}, error) {
+	var errors error
+
 	data := make(map[string][]interface{})
-	fmt.Printf("Loading YAML files...\n")
+	pterm.Info.Println("Aggregating data files...")
 
 	for _, model := range blox.Models {
 		// Attempt to decode all the YAML files with this directory as model
-		fmt.Printf("\t model %s: \n\t\tsource: %s\n", model.ID, path.Join(cfg.Base, cfg.Destination, model.Folder))
 
 		filepath.Walk(path.Join(cfg.Base, cfg.Destination, model.Folder),
 			func(path string, info os.FileInfo, err error) error {
@@ -72,7 +73,6 @@ func aggregateModels(cfg *config.BloxConfig) (map[string][]interface{}, error) {
 				}
 
 				ext := filepath.Ext(path)
-				slug := strings.Replace(filepath.Base(path), ext, "", -1)
 
 				// if ext != cfg.DefaultExtension {
 				// Should be SupportedExtensions?
@@ -87,16 +87,20 @@ func aggregateModels(cfg *config.BloxConfig) (map[string][]interface{}, error) {
 
 				entity, err := blox.FromYAML(path, model.ID, cueSchema)
 				if err != nil {
+					errors = multierror.Append(errors, multierror.Prefix(err, path))
 					return err
 				}
 				data[model.Folder] = append(data[model.ID], entity)
-				fmt.Printf("\t\t\t%s '%s' loaded\n", model.ID, slug)
 
 				return nil
 
 			})
 	}
-
+	if errors != nil {
+		pterm.Error.Println("Aggregation failed")
+	} else {
+		pterm.Success.Println("Aggregation complete")
+	}
 	return data, nil
 }
 

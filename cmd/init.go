@@ -7,6 +7,7 @@ import (
 
 	"github.com/devrel-blox/drb/blox"
 	"github.com/devrel-blox/drb/config"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -40,7 +41,6 @@ The "template" directory is where you can store templates for
 each content type with pre-filled values.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-
 		root, err := os.Getwd()
 		if err != nil {
 			cmd.PrintErr("unable to get current directory")
@@ -60,6 +60,7 @@ each content type with pre-filled values.
 			cobra.CheckErr(err)
 			cobra.CheckErr(model.New(model.ID+cfg.DefaultExtension, model.TemplatePath()))
 		}
+		pterm.Info.Println("Initialized folder structures.")
 
 	},
 }

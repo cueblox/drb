@@ -1,15 +1,14 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 	"path"
 	"path/filepath"
-	"strings"
 
 	"github.com/devrel-blox/drb/blox"
 	"github.com/devrel-blox/drb/config"
 	"github.com/hashicorp/go-multierror"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -27,18 +26,19 @@ to quickly create a Cobra application.`,
 		cfg, err := config.Load()
 		cobra.CheckErr(err)
 		cobra.CheckErr(validateModels(cfg))
+
 	},
 }
 
 func validateModels(cfg *config.BloxConfig) error {
 	var errors error
-	fmt.Printf("Validating YAML files...\n")
+
+	// Create and start a fork of the default spinner.
+	pterm.Info.Println("Validating YAML Files...")
 
 	// We want to validate all the YAML for the models that we're aware of.
 	for _, model := range blox.Models {
 		// Attempt to decode all the YAML files with this directory as model
-
-		fmt.Printf("\t model: %s\n\t\t in: %s\n", model.ID, path.Join(cfg.Base, cfg.Destination, model.Folder))
 
 		filepath.Walk(path.Join(cfg.Base, cfg.Destination, model.Folder),
 			func(path string, info os.FileInfo, err error) error {
@@ -52,7 +52,7 @@ func validateModels(cfg *config.BloxConfig) error {
 				}
 
 				ext := filepath.Ext(path)
-				slug := strings.Replace(filepath.Base(path), ext, "", -1)
+
 				// if ext != cfg.DefaultExtension {
 				// Should be SupportedExtensions?
 				if ext != ".yaml" && ext != ".yml" {
@@ -69,11 +69,15 @@ func validateModels(cfg *config.BloxConfig) error {
 					errors = multierror.Append(errors, multierror.Prefix(err, path))
 					return err
 				}
-				fmt.Printf("\t\t\t%s '%s' validated\n", model.ID, slug)
 
 				return err
 
 			})
+	}
+	if errors != nil {
+		pterm.Error.Println("Validations failed")
+	} else {
+		pterm.Success.Println("Validations complete")
 	}
 
 	return errors

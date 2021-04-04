@@ -2,11 +2,11 @@ package vercel
 
 import (
 	_ "embed"
-	"fmt"
 	"os"
 	"path"
 
 	"github.com/devrel-blox/drb/hosting"
+	"github.com/pterm/pterm"
 )
 
 func init() {
@@ -59,8 +59,8 @@ func (p *VercelProvider) Install() error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("Vercel provider installed.")
-	fmt.Println("Run `npm install` to install dependencies.")
+	pterm.Info.Println("Vercel provider installed.")
+	pterm.Info.Println("Run `npm install` to install dependencies.")
 
 	return nil
 }
