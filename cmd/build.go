@@ -71,7 +71,7 @@ func aggregateModels(cfg *config.BloxConfig) (map[string][]interface{}, error) {
 	data := make(map[string][]interface{})
 	fmt.Printf("Loading YAML files...\n")
 
-	for _, model := range blox.Models {
+	for _, model := range blox.GetAllModels() {
 		// Attempt to decode all the YAML files with this directory as model
 		fmt.Printf("\t model %s: \n\t\tsource: %s\n", model.ID, path.Join(cfg.Base, cfg.Destination, model.Folder))
 
@@ -95,12 +95,7 @@ func aggregateModels(cfg *config.BloxConfig) (map[string][]interface{}, error) {
 					return nil
 				}
 
-				cueSchema := model.Cue
-				if replace, ok := cfg.SchemaOverrides.Replace[model.ID]; ok {
-					cueSchema = replace
-				}
-
-				entity, err := blox.FromYAML(path, model.ID, cueSchema)
+				entity, err := blox.FromYAML(path, model.ID, model.Cue)
 				if err != nil {
 					return err
 				}

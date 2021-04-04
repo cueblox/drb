@@ -67,7 +67,7 @@ each content type with pre-filled values.
 			err = writeConfigFile()
 			cobra.CheckErr(err)
 		}
-		for _, model := range blox.Models {
+		for _, model := range blox.GetAllModels() {
 
 			model, err := blox.GetModel(model.ID)
 			cobra.CheckErr(err)

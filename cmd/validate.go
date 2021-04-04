@@ -50,7 +50,7 @@ func validateModels(cfg *config.BloxConfig) error {
 	fmt.Printf("Validating YAML files...\n")
 
 	// We want to validate all the YAML for the models that we're aware of.
-	for _, model := range blox.Models {
+	for _, model := range blox.GetAllModels() {
 		// Attempt to decode all the YAML files with this directory as model
 
 		fmt.Printf("\t model: %s\n\t\t in: %s\n", model.ID, path.Join(cfg.Base, cfg.Destination, model.Folder))
@@ -74,12 +74,7 @@ func validateModels(cfg *config.BloxConfig) error {
 					return err
 				}
 
-				cueSchema := model.Cue
-				if replace, ok := cfg.SchemaOverrides.Replace[model.ID]; ok {
-					cueSchema = replace
-				}
-
-				_, err = blox.FromYAML(path, model.ID, cueSchema)
+				_, err = blox.FromYAML(path, model.ID, model.Cue)
 				if err != nil {
 					errors = multierror.Append(errors, multierror.Prefix(err, path))
 					return err

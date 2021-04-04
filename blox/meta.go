@@ -14,35 +14,53 @@ import (
 // how to perform certain actions based on arguments
 // and flags provided. All new types must be
 // represented in this slice.
-var Models = []Model{
-	{
+func GetAllModels() map[string]Model {
+	models := make(map[string]Model)
+
+	models["profile"] = Model{
 		ID:         "profile",
 		Name:       "Profile",
 		Folder:     "profiles",
 		ForeignKey: "profile_id",
 		Cue:        ProfileCue,
-	},
-	{
+	}
+	models["article"] = Model{
 		ID:         "article",
 		Name:       "Article",
 		Folder:     "articles",
 		ForeignKey: "article_id",
 		Cue:        ArticleCue,
-	},
-	{
+	}
+	models["category"] = Model{
 		ID:         "category",
 		Name:       "Category",
 		Folder:     "categories",
 		ForeignKey: "category_id",
 		Cue:        CategoryCue,
-	},
-	{
+	}
+	models["page"] = Model{
 		ID:         "page",
 		Name:       "Page",
 		Folder:     "pages",
 		ForeignKey: "page_id",
 		Cue:        PageCue,
-	},
+	}
+
+	cfg, err := config.Load()
+	cobra.CheckErr(err)
+
+	for _, model := range cfg.Models {
+		tmpModel := Model{
+			ID:         model.ID,
+			Name:       model.Name,
+			Folder:     model.Folder,
+			ForeignKey: model.ForeignKey,
+			Cue:        model.Cue,
+		}
+		models[model.ID] = tmpModel
+	}
+
+	return models
 }
 
 type Model struct {
@@ -56,11 +74,10 @@ type Model struct {
 // GetModel finds a Model definition and returns
 // it to the caller.
 func GetModel(id string) (Model, error) {
-	for _, m := range Models {
-		if m.ID == id {
-			return m, nil
-		}
+	if m, ok := GetAllModels()[id]; ok {
+		return m, nil
 	}
+
 	return Model{}, errors.New("model not found")
 }
 

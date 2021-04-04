@@ -1,5 +1,6 @@
 ---
-name: David
+first_name: David
+last_name: McKay
 organization: Company
 title: Title
 social_accounts:
