@@ -21,6 +21,7 @@ import (
 
 	"github.com/devrel-blox/drb/hosting"
 	_ "github.com/devrel-blox/drb/hosting/azure"
+	_ "github.com/devrel-blox/drb/hosting/netlify"
 	_ "github.com/devrel-blox/drb/hosting/vercel"
 	"github.com/spf13/cobra"
 )
