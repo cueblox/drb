@@ -118,8 +118,6 @@ func convertModels(cfg *config.BloxConfig) error {
 				// 	failedModels[path] = err
 				// 	return nil
 				// }
-
-				// fmt.Println("Valid ", model.Name, ": ", path)
 				return nil
 			})
 	}

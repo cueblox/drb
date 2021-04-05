@@ -1,22 +1,29 @@
 package cmd
 
 import (
-	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 
 	"github.com/devrel-blox/drb/blox"
 	"github.com/devrel-blox/drb/config"
+	"github.com/devrel-blox/drb/cuedb"
+	"github.com/goccy/go-yaml"
 	"github.com/hashicorp/go-multierror"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
-// buildCmd represents the build command
+var (
+	referentialIntegrity bool
+)
+
 var buildCmd = &cobra.Command{
 	Use:   "build",
-	Short: "Build content source into a JSON file",
+	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 
@@ -27,49 +34,47 @@ to quickly create a Cobra application.`,
 		cfg, err := config.Load()
 		cobra.CheckErr(err)
 
-		// convert markdown to yaml
-		cobra.CheckErr(convertModels(cfg))
-
-		// validate yaml
-		cobra.CheckErr(validateModels(cfg))
-
-		data, err := aggregateModels(cfg)
+		database, err := cuedb.NewDatabase()
 		cobra.CheckErr(err)
 
-		f, err := os.Create(path.Join(cfg.Base, cfg.Destination, "data.json"))
+		// Load Schemas!
+		cobra.CheckErr(database.RegisterTables(blox.ProfileCue))
+
+		cobra.CheckErr(buildModels(cfg, &database))
+
+		if referentialIntegrity {
+			pterm.Info.Println("Checking Referential Integrity")
+			err = database.ReferentialIntegrity()
+			if err != nil {
+				pterm.Error.Println(err)
+			} else {
+				pterm.Success.Println("Foreign Keys Validated")
+			}
+		}
+
+		jso, err := database.MarshalJSON()
 		cobra.CheckErr(err)
 
-		defer f.Close()
-
-		bb, err := json.Marshal(data)
-		cobra.CheckErr(err)
-
-		_, err = f.Write(bb)
-
-		cobra.CheckErr(err)
-		pterm.Info.Printf("wrote: %s\n", path.Join(cfg.Base, cfg.Destination, "data.json"))
+		fmt.Println("I should write this to a file")
+		fmt.Println(string(jso))
 
 	},
 }
 
-func aggregateModels(cfg *config.BloxConfig) (map[string][]interface{}, error) {
+func buildModels(cfg *config.BloxConfig, db *cuedb.Database) error {
 	var errors error
 
-	data := make(map[string][]interface{})
-	pterm.Info.Println("Aggregating data files...")
+	pterm.Info.Println("Validating ...")
 
-	for _, model := range blox.Models {
-		// Attempt to decode all the YAML files with this directory as model
-
-		filepath.Walk(path.Join(cfg.Base, cfg.Destination, model.Folder),
+	for _, table := range db.GetTables() {
+		err := filepath.Walk(path.Join(cfg.Base, cfg.Destination, table.Directory()),
 			func(path string, info os.FileInfo, err error) error {
 				if err != nil {
-					// Squash, we've not even validated that it's a supported ext
-					return nil
+					return err
 				}
 
 				if info.IsDir() {
-					return nil
+					return err
 				}
 
 				ext := filepath.Ext(path)
@@ -77,43 +82,52 @@ func aggregateModels(cfg *config.BloxConfig) (map[string][]interface{}, error) {
 				// if ext != cfg.DefaultExtension {
 				// Should be SupportedExtensions?
 				if ext != ".yaml" && ext != ".yml" {
-					return nil
-				}
-
-				cueSchema := model.Cue
-				if replace, ok := cfg.SchemaOverrides.Replace[model.ID]; ok {
-					cueSchema = replace
-				}
-
-				entity, err := blox.FromYAML(path, model.ID, cueSchema)
-				if err != nil {
-					errors = multierror.Append(errors, multierror.Prefix(err, path))
 					return err
 				}
-				data[model.Folder] = append(data[model.ID], entity)
 
-				return nil
+				slug := strings.Replace(filepath.Base(path), ext, "", -1)
+
+				bytes, err := ioutil.ReadFile(path)
+				if err != nil {
+					return multierror.Append(err)
+				}
+
+				var istruct = make(map[string]interface{})
+
+				err = yaml.Unmarshal(bytes, &istruct)
+
+				if err != nil {
+					return multierror.Append(err)
+				}
+
+				record := make(map[string]interface{})
+				record[slug] = istruct
+
+				err = db.Insert(table, record)
+				if err != nil {
+					return multierror.Append(err)
+				}
+
+				return err
 
 			})
+
+		if err != nil {
+			errors = multierror.Append(err)
+		}
 	}
+
 	if errors != nil {
-		pterm.Error.Println("Aggregation failed")
+		pterm.Error.Println("Validations failed")
 	} else {
-		pterm.Success.Println("Aggregation complete")
+		pterm.Success.Println("Validations complete")
 	}
-	return data, nil
+
+	return errors
 }
 
 func init() {
 	rootCmd.AddCommand(buildCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// buildCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// buildCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	buildCmd.Flags().BoolVarP(&referentialIntegrity, "referential-integrity", "i", false, "Enforce referential integrity")
 }

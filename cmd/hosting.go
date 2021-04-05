@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/devrel-blox/drb/hosting"
 	_ "github.com/devrel-blox/drb/hosting/azure"
@@ -38,7 +37,7 @@ var cmdList = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		list := hosting.Providers()
 		for _, p := range list {
-			fmt.Printf("%s:\t %s\n", p.Name(), p.Description())
+			pterm.Info.Printf("%s:\t %s\n", p.Name(), p.Description())
 		}
 	},
 }
